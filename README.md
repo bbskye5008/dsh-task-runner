@@ -1,5 +1,7 @@
 # DeepSeek Harness Task Runner
 
+[English](https://github.com/bbskye5008/dsh-task-runner/blob/main/README.en.md) | 简体中文
+
 输入工作区、完整任务和验收命令，自动创建受门禁保护的任务会话。
 默认最多 **8 轮、90 分钟**；验收失败继续修复，到限取消并记录未完成。
 同一候选验收通过、当前 Goal 证书有效且 Goal 已完成，才允许 PUA 自动结束。
@@ -7,15 +9,35 @@
 这是组合 PUA 与 Completion Guard 的本地集成，当前验证目标为 macOS /
 DeepSeek Harness 0.2.0-rc.2，PUA 0.3.27、Guard 0.9.0。其他宿主版本未声明兼容。
 
+## 适合什么任务
+
+给已有项目增加功能、修复缺陷或改造命令行工具，并有一个可信的验收命令时，可以用本插件持续执行、验收失败后修复。
+它新增 `/task-run` 与 `dsh-task` 启动器、任务契约生成、独立副本验收、候选与 Goal 版本绑定的证书门禁、预算取消及本地证据记录。
+这些行为由本插件在宿主进程中协调；它不是仅安装一组插件的依赖清单。
+
 ## 安装
 
 包内提交了可运行 JavaScript，无须安装时执行 build/prepare 脚本。
-在 Harness 的“安装第三方插件”里选择本包的本地目录、发布 tarball 或 GitHub 地址。
+在 Harness 的“安装第三方插件”里选择本包的本地目录、本地 `.tgz` 文件或 GitHub 地址。
 本机没有 dsh CLI 时也可使用这个入口。先停止正在运行的任务，安装后重启 Harness。
 
-本版本需要先安装 @michengai/dsh-pua@0.3.27 与 dsh-completion-guard@0.9.0，
-再安装本组合包。Desktop profile 由 Electron 应用管理，请使用界面的插件安装入口；
-dsh CLI 会拒绝直接修改这个受管 profile。
+当前验证范围为 **macOS / DeepSeek Harness Desktop 0.2.0-rc.2**；宿主须提供标准 Agent 预设、Goal 服务和两个原组件的安装记录。
+其他客户端、Web/headless profile、Windows/Linux 和其他宿主版本尚未验证，不能据此宣称兼容。
+
+在 Desktop 的「插件 → 添加插件」中，按顺序填入下表的安装来源。已有对应版本则保留，不必重复安装。
+
+| 顺序 | 插件 | 安装来源 |
+| --- | --- | --- |
+| 1 | [PUA（原作者）](https://github.com/MichengAI/dsh-pua) | `@michengai/dsh-pua@0.3.27` |
+| 2 | [Completion Guard（原作者）](https://github.com/GreenLv/dsh-completion-guard) | `dsh-completion-guard@0.9.0` |
+| 3 | Task Runner | `github:bbskye5008/dsh-task-runner#v0.2.2` |
+
+安装完成后重启 Harness。Task Runner 不会自行联网安装这两个前置插件，也不会修改账户或模型配置。
+Desktop profile 由 Electron 应用管理；不要执行 `dsh plugin --profile desktop add ...`，CLI 会拒绝修改这个受管 profile。
+
+从市场安装时，先完成前两项，再安装本条目并重启。收录 PR 合并且目录同步后才能在市场中搜索到；提出 PR 不等于已收录。
+当前申请条目使用仓库源码安装路径，不声明 `tarball` 字段，避免让市场优先选择尚未验证的远端 Release URL 安装形式。
+源码已带预构建产物，无需编译。离线安装可先下载 Release 的 `.tgz`，再在 Desktop 安装入口填写下载文件的本地绝对路径。
 
 组合包安装来源：`github:bbskye5008/dsh-task-runner#v0.2.2`。
 源码仓库：https://github.com/bbskye5008/dsh-task-runner 。
@@ -119,6 +141,22 @@ profile.json / user-message.txt 是冻结契约；checks/ 保存副本和实际�
 每个字节。既有依赖与验收执行环境需要可信。
 工具策略和同用户 Unix socket 均不是 OS 沙箱，不能防御任意同用户恶意代码。
 证书由宿主进程私钥签发，只证明完成时的绑定和执行证据，不是离线公开签名。
+
+## 常见问题与卸载
+
+- `open_a_model_configured_conversation_first`：CLI 找不到已加载的来源会话；先在 Harness 的正常会话中执行 `/task-run ...`，或加载一个已有会话后再运行 CLI。
+- `host_qualification_unavailable`：宿主版本、安装记录或实际依赖树未通过资格审计。先核对上述版本和来源；不要关闭 Guard、改写安装索引或更换验收命令来绕过。
+- `round_limit` / `deadline`：预算到限，结果是未完成；检查证据目录后，由用户明确发起新的运行。重启不会自动续给预算。
+- `npm test` 等验收命令需要的依赖应在开跑前准备好；验证时不会自动安装依赖。验收应使用相对路径或 `DSH_TASK_WORKSPACE`，额外外部依赖用 `--freeze` 登记。
+- 卸载前先 `dsh-task cancel task-UUID`，再通过 Desktop 插件管理器卸载 Task Runner 并重启。保留原 PUA/Guard 插件即可恢复原服务器条目；旧任务证据仍保存在 `~/.dsh/task-runner/`。
+- 如果手工建立过 `~/.local/bin/dsh-task` 链接，卸载后确认其仍指向本插件，再移除这个链接；不要删除其他同名命令。
+
+## 上游与本插件的关系
+
+感谢 [MichengAI/dsh-pua](https://github.com/MichengAI/dsh-pua) 和 [GreenLv/dsh-completion-guard](https://github.com/GreenLv/dsh-completion-guard)。
+正式前置安装来源均为原作者的 npm 包。本包还携带归属明确的 Apache-2.0 修改版服务器组件，以接入同候选验收和证书门禁；
+原始许可证、NOTICE、固定版本与文件哈希见 `vendor/`。这些修改不是上游官方版本，上游作者未背书。
+本插件自身新增的协调逻辑位于 `index.mjs`、`runtime/` 和 `guard.mjs`，组合差异可由 `scripts/build-vendor.py` 复现。
 
 ## 开发与发布
 
