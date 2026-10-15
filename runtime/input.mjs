@@ -4,16 +4,20 @@ import {parse} from 'shell-quote';
 import {spawnSync} from 'node:child_process';
 import {hash,regular,treeInventory} from './profile-store.mjs';
 
-export function parseInput(raw,{allowPreparation=false}={}) {
+export function parseInput(raw,{allowPreparation=false,defaultWorkspace}={}) {
   const s=raw.trim();let value;
   if(s.startsWith('{'))value=JSON.parse(s);
   else {
     const args=parse(s,{});value={};const names={'--workspace':'workspace','--task':'task','--task-file':'taskFile','--verify':'verify','--rounds':'rounds','--minutes':'minutes','--freeze':'freeze'};
-    for(let i=0;i<args.length;i++){const key=names[args[i]],v=args[++i];if(!key||typeof v!=='string')throw Error('Use --workspace PATH --task TEXT --verify COMMAND');if(key==='freeze')(value.freeze??=[]).push(v);else if(value[key]!==undefined)throw Error('duplicate_option:'+key);else value[key]=v;}
+    for(let i=0;i<args.length;i++){const key=names[args[i]],v=args[++i];if(!key||typeof v!=='string')throw Error('Use --task TEXT [--workspace PATH] [--verify COMMAND]');if(key==='freeze')(value.freeze??=[]).push(v);else if(value[key]!==undefined)throw Error('duplicate_option:'+key);else value[key]=v;}
   }
   if(!value||Array.isArray(value)||typeof value!=='object')throw Error('input_object_required');
   const allowed=new Set(['workspace','task','taskFile','verify','rounds','minutes','freeze']);
   for(const k of Object.keys(value))if(!allowed.has(k))throw Error('unknown_option:'+k);
+  if(value.workspace===undefined){
+    if(defaultWorkspace===undefined)throw Error('current_workspace_unavailable: 当前会话未设置工作区，请指定 --workspace "/绝对路径"');
+    value.workspace=defaultWorkspace;
+  }
   if(value.taskFile){if(value.task)throw Error('task_and_task_file_conflict');value.task=regular(resolve(value.taskFile)).toString('utf8');}
   if(typeof value.workspace!=='string'||!isAbsolute(value.workspace))throw Error('absolute_workspace_required');
   value.workspace=realpathSync(value.workspace);if(!lstatSync(value.workspace).isDirectory())throw Error('workspace_directory_required');

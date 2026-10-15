@@ -2,7 +2,7 @@
 
 [English](https://github.com/bbskye5008/dsh-task-runner/blob/main/README.en.md) | 简体中文
 
-输入工作区和想做的事情，先用 SpecWorkflow 澄清需求、整理规格和生成验收脚本；确认具体版本后，自动创建受门禁保护的任务会话。
+输入想做的事情，先用 SpecWorkflow 澄清需求、整理规格和生成验收脚本；确认具体版本后，自动创建受门禁保护的任务会话。
 已有可信验收命令时，仍可直接执行。
 默认最多 **8 轮、90 分钟**；验收失败继续修复，到限取消并记录未完成。
 同一候选验收通过、当前 Goal 证书有效且 Goal 已完成，才允许 PUA 自动结束。
@@ -31,7 +31,7 @@ DeepSeek Harness 0.2.0-rc.2，PUA 0.3.27、Guard 0.9.0。其他宿主版本未�
 | --- | --- | --- |
 | 1 | [PUA（原作者）](https://github.com/MichengAI/dsh-pua) | `@michengai/dsh-pua@0.3.27` |
 | 2 | [Completion Guard（原作者）](https://github.com/GreenLv/dsh-completion-guard) | `dsh-completion-guard@0.9.0` |
-| 3 | Task Runner | `github:bbskye5008/dsh-task-runner#v0.3.4` |
+| 3 | Task Runner | `github:bbskye5008/dsh-task-runner#v0.3.5` |
 
 0.3.4 已内置 SpecWorkflow 的 `to-grill`（需求澄清）和 `to-spec`（规格整理），无需单独安装 SpecWorkflow。
 这两个阶段只准备需求、规格和验收；确认后继续由现有 PUA + Guard 执行。
@@ -40,16 +40,16 @@ DeepSeek Harness 0.2.0-rc.2，PUA 0.3.27、Guard 0.9.0。其他宿主版本未�
 复制 Task Runner 安装来源，在 Desktop 的「插件 → 添加插件」输入框粘贴并安装：
 
 ```text
-github:bbskye5008/dsh-task-runner#v0.3.4
+github:bbskye5008/dsh-task-runner#v0.3.5
 ```
 
-已有 Task Runner 时，先取消活动任务，再通过同一入口安装这个版本并重启；启动后在插件详情核对版本为 0.3.4。
+已有 Task Runner 时，先取消活动任务，再通过同一入口安装这个版本并重启；启动后在插件详情核对版本为 0.3.5。
 Task Runner 不会自行联网安装这两个前置插件，也不会修改账户或模型配置。
 Desktop profile 由 Electron 应用管理；不要执行 `dsh plugin --profile desktop add ...`，CLI 会拒绝修改这个受管 profile。
 
 GitHub 发布与市场目录更新相互独立，已安装插件也不会自动升级。
 市场入口应以目录登记的版本为准；本版可直接使用上述固定标签安装来源。
-离线安装可下载 [v0.3.4 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.4) 的 `.tgz`，
+离线安装可下载 [v0.3.5 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.5) 的 `.tgz`，
 再在安装输入框填写下载文件的本地绝对路径。远程 Release 资产 URL 的直接安装方式尚未验证。
 
 原 Guard 的 Desktop 宿主资格链需要 profile 保留它的正式安装记录；本包不绕过该检查。
@@ -59,13 +59,15 @@ GitHub 发布与市场目录更新相互独立，已安装插件也不会自动�
 
 ## 一个启动命令
 
-安装 0.3.4 并重启 Harness，在已选择所需模型的普通会话中输入：
+安装 **0.3.5** 并重启 Harness 后，在已选择所需模型、已绑定工作区的普通会话中输入：
 
 ```text
-/task-run --workspace "/绝对路径/工作区" --task "我想做的事情"
+/task-run --task "我想做的事情"
 ```
 
-或在终端运行 `dsh-task --workspace "/绝对路径/工作区" --task "我想做的事情"`。
+Harness 命令默认使用**发出命令的当前会话工作区**；终端 `dsh-task --task "我想做的事情"`
+默认使用**当前终端目录**。需要指定其他项目时，再加 `--workspace "/绝对路径/工作区"`，显式路径优先。
+当前会话没有有效工作区时会提示指定路径，不会猜测另一个项目或使用 Harness 进程目录。
 不提供 `--verify` 时创建独立准备会话，沿用来源会话的模型与推理设置：
 
 1. `to-grill` 阅读项目、逐个澄清必要业务决策，保存 `requirements.md`。
@@ -98,7 +100,7 @@ GitHub 发布与市场目录更新相互独立，已安装插件也不会自动�
 如果已经有经过检查的验收命令，提供 `--verify` 即可跳过需求准备。在 Harness 中输入：
 
 ```text
-/task-run --workspace "/绝对路径/工作区" --task "具体任务" --verify "npm test"
+/task-run --task "具体任务" --verify "npm test"
 ```
 
 也可以在终端使用已安装插件的 CLI：
@@ -118,7 +120,7 @@ mkdir -p "$HOME/.local/bin"
 ln -s "$HOME/.dsh/profiles/desktop/node_modules/dsh-task-runner/cli.mjs" "$HOME/.local/bin/dsh-task"
 ```
 
-然后直接运行 dsh-task --workspace ... --task ... --verify ...。
+然后在项目目录直接运行 dsh-task --task ... --verify ...。
 任务较长时用 --task-file /绝对路径/任务.txt；与 --task 二选一。
 可加 --rounds 4 或 --minutes 30 降低限制，任何值都不能提高到 8 轮 / 90 分钟以上。
 先打开一个已配置模型的会话。模型沿用最近一个已加载根会话的设置；
@@ -127,7 +129,7 @@ CLI 返回新 sessionId 和证据目录；可用 status 查询，界面显示取
 
 该入口创建独立任务会话，沿用提交命令会话的模型配置。
 支持等价 JSON 对象输入；无需再粘贴 PUA、Guard 和任务正文四段内容。
-工作区路径必须绝对；描述和命令必须加引号。本机启动器使用标准 argv/JSON 编码，
+显式指定的工作区路径必须绝对；描述和命令必须加引号。本机启动器使用标准 argv/JSON 编码，
 不模拟键盘输入，避免此前原生键入破坏 JSON 标点的问题。
 
 ```sh
@@ -169,6 +171,12 @@ Harness 对应命令是 /task-run status 和 /task-run cancel task-UUID。
 status.json 保存状态、原截止和最终证书摘要；events.jsonl 保存真实验收与门禁决定；
 profile.json / user-message.txt 是冻结契约；checks/ 保存副本和实际进程结果。
 控制器仅监听当前用户权限的 Unix socket，不开公网端口，不上传任务内容。
+
+## 0.3.5 工作区默认值
+
+`npm test`：62 项通过，覆盖省略路径时的准备/执行入口、显式路径覆盖、无效路径拒绝，
+以及 CLI 的真实子进程目录传递。准备与执行仍绑定规范化后的具体工作区，冻结验收、证书和预算规则不变。
+升级后的真实会话验证结果记录在 [0.3.5 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.5)。
 
 ## 0.3.4 实测
 

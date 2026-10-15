@@ -2,7 +2,7 @@
 
 English | [简体中文](README.md)
 
-Start a bounded coding task with a workspace, task description and acceptance command.
+Start a bounded coding task with a task description and an optional acceptance command.
 Task Runner coordinates PUA and Completion Guard: a task may finish only when the
 same candidate passes the frozen acceptance command, has a certificate for the
 current Goal revision, and the Goal is complete. Defaults are **at most 8 rounds
@@ -11,20 +11,27 @@ is recorded as incomplete.
 
 This is an independent integration, not an official DeepSeek product.
 
-## Requirements preparation (0.3.4)
+## Requirements preparation
 
-Install the 0.3.4 composite package in Desktop and restart Harness. It includes
+Install the 0.3.5 composite package in Desktop and restart Harness. It includes
 unchanged SpecWorkflow 0.1.1 `to-grill` / `to-spec` skills and references with
 their MIT license and byte provenance. Its registration adapter targets the
 installed DSH 0.2.0-rc.2 bundled-provider SDK, including a real-SDK load check.
 The upstream npm plugin declares a 0.1.x SDK peer range and is rejected by this
 Desktop installer; this port grants no version exemption and does not alter the
 upstream plugin's metadata. No separate SpecWorkflow installation is needed.
-Start with only:
+Version **0.3.5** defaults to the current workspace. From a model-configured
+Harness conversation attached to your project, start with:
 
 ```text
-/task-run --workspace "/absolute/workspace" --task "Describe what you want"
+/task-run --task "Describe what you want"
 ```
+
+The Harness command uses the invoking conversation's workspace; the terminal
+`dsh-task` command uses its current working directory. An explicit
+`--workspace "/absolute/project"` overrides that default. A conversation without
+a valid workspace must supply one explicitly; the Host process directory and
+other conversations are never used as an implicit workspace for that command.
 
 Omitting `--verify` starts a separate preparation conversation using the source
 model settings. It loads SpecWorkflow `to-grill`, saves clarified requirements,
@@ -63,7 +70,7 @@ In Desktop, open **Plugins → Add plugin** and install these sources in order:
 | --- | --- | --- |
 | 1 | [Original PUA](https://github.com/MichengAI/dsh-pua) | `@michengai/dsh-pua@0.3.27` |
 | 2 | [Original Completion Guard](https://github.com/GreenLv/dsh-completion-guard) | `dsh-completion-guard@0.9.0` |
-| 3 | Task Runner | `github:bbskye5008/dsh-task-runner#v0.3.4` |
+| 3 | Task Runner | `github:bbskye5008/dsh-task-runner#v0.3.5` |
 
 Keep already installed matching versions. Restart Harness after installation.
 Task Runner does not automatically install its prerequisites or change model or
@@ -85,7 +92,7 @@ entry may still refer to a different cataloged version.
 From a normal Harness conversation with the desired model selected:
 
 ```text
-/task-run --workspace "/absolute/project" --task "Implement the requested feature and add self-tests" --verify "npm test"
+/task-run --task "Implement the requested feature and add self-tests" --verify "npm test"
 ```
 
 Or, with Harness running and a model-configured root conversation loaded:
@@ -115,7 +122,7 @@ dsh-task --help
 Do not overwrite an unrelated existing command. Then use:
 
 ```sh
-dsh-task --workspace "/absolute/project" --task "Your full task" --verify "npm test"
+dsh-task --task "Your full task" --verify "npm test"
 dsh-task status
 dsh-task status task-UUID
 dsh-task diagnose task-UUID
@@ -164,7 +171,9 @@ remove only that link after checking its target.
 
 ## Validation, scope and attribution
 
-[Validation record](VALIDATION.md): 57 core tests passed. A real Flash / High
+[Validation record](VALIDATION.md): version 0.3.5 has 62 passing core tests,
+including default workspace, explicit override and CLI directory checks. The
+following real Flash / High test was completed on 0.3.4: a
 Chinese CSV task went through requirements clarification, specification, generated
 acceptance, digest approval, implementation and automatic completion in 1 round /
 327.231 seconds. Frozen generated acceptance passed 39/39, candidate self-tests

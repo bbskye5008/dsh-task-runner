@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,appendFileSync,existsSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,appendFileSync,existsSync,realpathSync} from 'node:fs';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {parseInput,discoverFrozen} from '../runtime/input.mjs';
@@ -21,6 +21,24 @@ test('three inputs default to exactly 8 rounds and 90 minutes',()=>{
 test('shell-style input preserves Chinese spaces and quoted verification command',()=>{
  const f=fixture();const x=parseInput('--workspace "'+f.workspace+'" --task "含 空格的中文任务" --verify "python3 -c \'print(1)\'"');
  assert.equal(x.task,'含 空格的中文任务');assert.equal(x.verify,"python3 -c 'print(1)'");
+});
+test('omitted workspace uses the invoking session directory for preparation and direct execution',()=>{
+ const f=fixture();
+ for(const raw of ['--task "中文任务"',JSON.stringify({task:'中文任务'})]){
+  const input=parseInput(raw,{allowPreparation:true,defaultWorkspace:f.workspace});
+  assert.equal(input.workspace,realpathSync(f.workspace));assert.equal(input.verify,undefined);
+  assert.equal(input.rounds,8);assert.equal(input.minutes,90);
+ }
+ assert.equal(parseInput('--task "中文任务" --verify "true"',{defaultWorkspace:f.workspace}).workspace,realpathSync(f.workspace));
+});
+test('explicit workspace overrides the session default and invalid explicit paths never fall back',()=>{
+ const f=fixture(),other=join(f.dir,'其他 工作区');mkdirSync(other);
+ assert.equal(parseInput(JSON.stringify({workspace:other,task:'中文任务',verify:'true'}),{defaultWorkspace:f.workspace}).workspace,realpathSync(other));
+ for(const workspace of ['',null,42,'.',join(f.dir,'missing')])assert.throws(()=>parseInput(JSON.stringify({workspace,task:'中文任务',verify:'true'}),{defaultWorkspace:f.workspace}));
+});
+test('missing session workspace fails clearly instead of using the Host process directory',()=>{
+ assert.throws(()=>parseInput('--task "中文任务" --verify "true"'),/current_workspace_unavailable/);
+ for(const defaultWorkspace of ['',null,'.'])assert.throws(()=>parseInput('--task "中文任务" --verify "true"',{defaultWorkspace}),/absolute_workspace_required/);
 });
 for(const change of [{rounds:9},{rounds:0},{minutes:91},{minutes:0},{unexpected:true},{verify:'if then'}])test('invalid or expanded budget fails before a run '+JSON.stringify(change),()=>{
  const f=fixture();assert.throws(()=>parseInput(JSON.stringify({...f.input,...change})));

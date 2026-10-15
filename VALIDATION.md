@@ -1,4 +1,14 @@
-# 0.2.2 验证记录（含 0.2.0 任务基线）
+# 验证记录
+
+## 0.3.5 默认工作区
+
+`npm test`：62 项通过。新增 5 项测试覆盖省略路径的准备/执行输入、JSON 输入、显式覆盖、
+缺少或无效工作区的拒绝，以及真实 CLI 子进程使用终端当前目录并保留显式路径。
+真实 SDK 的技能加载与准备工具适配检查通过；其中 Agent 工厂及执行启动使用测试替身，不等同于模型实测。
+升级后的真实 Harness 会话验证结果见 [0.3.5 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.5)。
+本次改动未修改冻结验收器、证书门禁和轮次/时限约束。
+
+## 0.2.2 验证记录（含 0.2.0 任务基线）
 
 日期：2026-10-15。环境：macOS、DeepSeek Harness 0.2.0-rc.2、PUA 0.3.27、Guard 0.9.0。
 真实模型路由：deepseek-account / deepseek-flash，reasoningEffort=high。

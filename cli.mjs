@@ -5,9 +5,9 @@ import {join} from 'node:path';
 import {createConnection} from 'node:net';
 import {parseArgs} from 'node:util';
 const {values:v,positionals:p}=parseArgs({allowPositionals:true,options:{workspace:{type:'string'},task:{type:'string'},'task-file':{type:'string'},verify:{type:'string'},rounds:{type:'string'},minutes:{type:'string'},freeze:{type:'string',multiple:true},session:{type:'string'},help:{type:'boolean'}}});
-if(v.help){console.log('dsh-task --workspace /path --task "想做的事情" [--verify "已有验收命令"]\n不提供 --verify：进入 SpecWorkflow 澄清、规格和验收脚本准备。\ndsh-task review PREP_ID\ndsh-task reply PREP_ID "回答或修改意见"\ndsh-task approve PREP_ID DIGEST\ndsh-task status [ID]\ndsh-task cancel ID\ndsh-task diagnose ID\n确认后正式执行，默认最多 8 轮、90 分钟；--rounds/--minutes 只能降低上限。需 Harness 正在运行。');process.exit(0);}
+if(v.help){console.log('dsh-task --task "想做的事情" [--workspace /path] [--verify "已有验收命令"]\n工作区默认使用当前终端目录；--workspace 可指定其他绝对路径。\n不提供 --verify：进入 SpecWorkflow 澄清、规格和验收脚本准备。\ndsh-task review PREP_ID\ndsh-task reply PREP_ID "回答或修改意见"\ndsh-task approve PREP_ID DIGEST\ndsh-task status [ID]\ndsh-task cancel ID\ndsh-task diagnose ID\n确认后正式执行，默认最多 8 轮、90 分钟；--rounds/--minutes 只能降低上限。需 Harness 正在运行。');process.exit(0);}
 const action=p[0]??'start';if(!['start','status','cancel','diagnose','review','reply','approve'].includes(action))throw Error('unknown_action');
-const input={workspace:v.workspace,task:v.task,taskFile:v['task-file'],verify:v.verify,rounds:v.rounds,minutes:v.minutes,freeze:v.freeze};
+const input={workspace:v.workspace??(action==='start'?process.cwd():undefined),task:v.task,taskFile:v['task-file'],verify:v.verify,rounds:v.rounds,minutes:v.minutes,freeze:v.freeze};
 try {
   const home=process.env.DSH_TASK_RUNNER_HOME||join(process.env.DSH_HOME||join(homedir(),'.dsh'),'task-runner');
   const control=JSON.parse(readFileSync(join(home,'control.json'),'utf8'));

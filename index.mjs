@@ -59,11 +59,11 @@ export function apply(ctx) {
     return ctx.agents.list().filter(a=>!a.session.header.parentSession).sort((a,b)=>b.session.header.createdAt-a.session.header.createdAt)[0];
   };
   const preparations=installPreparationHost(ctx,{home,start,latestOrigin});
-  const launch=(raw,origin,signal)=>{const input=parseInput(raw,{allowPreparation:true});return input.verify===undefined?preparations.prepare(input,origin,signal):start(input,origin,signal);};
+  const launch=(raw,origin,signal)=>{const input=parseInput(raw,{allowPreparation:true,defaultWorkspace:origin?.session.header.cwd});return input.verify===undefined?preparations.prepare(input,origin,signal):start(input,origin,signal);};
   const command=async inv=>{
     try {
       const s=inv.rawInput.trim();
-      if(!s||s==='help')return {kind:'success',text:'用法：/task-run --workspace "/绝对路径" --task "想做的事情"，进入 SpecWorkflow 澄清、规格、验收脚本准备；review PREP_ID 查看待确认版本；approve PREP_ID DIGEST 确认并执行。提供 --verify "独立验收命令" 可直接执行。正式执行最多 8 轮、90 分钟。status [ID] 查看；cancel ID 取消。'};
+      if(!s||s==='help')return {kind:'success',text:'用法：/task-run --task "想做的事情"，默认使用当前会话工作区；可加 --workspace "/绝对路径" 切换工作区。进入 SpecWorkflow 澄清、规格、验收脚本准备；review PREP_ID 查看待确认版本；approve PREP_ID DIGEST 确认并执行。提供 --verify "独立验收命令" 可直接执行。正式执行最多 8 轮、90 分钟。status [ID] 查看；cancel ID 取消。'};
       if(s==='status'||s.startsWith('status ')){const id=s.slice(6).trim();return {kind:'success',text:JSON.stringify(id?.startsWith('prep-')?preparations.status(id):id?snapshot(live.get(id)??(()=>{throw Error('run_not_live');})()):{runs:[...live.values()].map(snapshot),preparations:preparations.status()},null,2)};}
       if(s.startsWith('review '))return {kind:'success',text:JSON.stringify(preparations.status(s.slice(7).trim()),null,2)};
       if(s.startsWith('approve ')){const [,id,digest,...extra]=s.split(/\s+/);if(extra.length)throw Error('approve_requires_id_and_digest');return {kind:'success',text:'已确认并启动：'+JSON.stringify(await preparations.approve(id,digest,inv.agent,inv.signal))};}
@@ -71,7 +71,7 @@ export function apply(ctx) {
       const result=await launch(s,inv.agent,inv.signal);return {kind:'success',text:(result.id.startsWith('prep-')?'需求准备已启动：':'长任务已启动：')+JSON.stringify(result)};
     }catch(e){return {kind:'error',text:String(e.message??e)};}
   };
-  ctx.commands.register({name:'task-run',description:'先澄清需求并准备验收，确认后执行有证书门禁的长任务，最多 8 轮、90 分钟',input:{hint:'--workspace "/绝对路径" --task "任务" [--verify "验收命令"]'},handler:command});
+  ctx.commands.register({name:'task-run',description:'使用当前工作区，先澄清需求并准备验收，确认后执行有证书门禁的长任务，最多 8 轮、90 分钟',input:{hint:'--task "任务" [--workspace "/绝对路径"] [--verify "验收命令"]'},handler:command});
   const diagnose=run=>{const native=run.agent&&existingNativeTask(run.agent);return {status:snapshot(run),guard:native?{base:native.base(),violations:native.runtime.projection.integrityViolations,activation:native.runtime.activationDiagnostic}:null,qualification:ctx.taskRunnerHost.qualification};};
   ctx.on('agent/pre-step',async({agent},next)=>{
     const run=runFor(agent.session);if(!run)return next();
