@@ -17,7 +17,7 @@ DeepSeek Harness 0.2.0-rc.2，PUA 0.3.27、Guard 0.9.0。其他宿主版本未�
 再安装本组合包。Desktop profile 由 Electron 应用管理，请使用界面的插件安装入口；
 dsh CLI 会拒绝直接修改这个受管 profile。
 
-组合包安装来源：`github:bbskye5008/dsh-task-runner#v0.2.0`。
+组合包安装来源：`github:bbskye5008/dsh-task-runner#v0.2.1`。
 源码仓库：https://github.com/bbskye5008/dsh-task-runner 。
 已提交预构建 JavaScript，下载后无需编译；GitHub 安装与市场收录是两件事。
 原 Guard 的 Desktop 宿主资格链需要 profile 保留它的正式安装记录；本包不绕过该检查。
@@ -107,6 +107,7 @@ profile.json / user-message.txt 是冻结契约；checks/ 保存副本和实际�
 2026-10-15 在实际 Desktop 客户端使用 Flash / High，中文 JSONL 聚合任务在 2 轮、
 5 分 7 秒内自动完成。无证书/失败候选被拦截，同一候选在 Goal rev1 → rev2 后重新签证；
 封存副本独立验收通过，22 项候选自测通过。另测轮次、慢验收截止取消和重启中断。
+0.2.1 另修复固定 GitHub 提交来源的安装身份核对，并增加 10 项针对性测试。
 详见 [验证记录](VALIDATION.md)。这不代表已经连续运行满 90 分钟或跨平台验证。
 
 ## 边界

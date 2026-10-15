@@ -1,11 +1,11 @@
-# 0.2.0 验证记录
+# 0.2.1 验证记录（含 0.2.0 任务基线）
 
 日期：2026-10-15。环境：macOS、DeepSeek Harness 0.2.0-rc.2、PUA 0.3.27、Guard 0.9.0。
 真实模型路由：deepseek-account / deepseek-flash，reasoningEffort=high。
 
 ## 核心测试
 
-`npm test`：26 项通过、0 失败。覆盖输入及 8 轮/90 分钟边界、快照验收、打印 pass 但非零退出、
+`npm test`：36 项通过、0 失败（原 26 项与新增 10 项安装来源测试）。覆盖输入及 8 轮/90 分钟边界、快照验收、打印 pass 但非零退出、
 验收子进程超时/取消、冻结测试目录及外部验收依赖新增检测、候选绑定、Goal 版本变化重签、
 终态拒绝和进程重启只恢复无权限墓碑。
 
@@ -48,3 +48,18 @@ Guard 激活、宿主资格与持久化状态。之后通过上述真实测试�
 只验证上述 macOS 宿主版本，其他版本不声明兼容；宿主自身的历史会话恢复问题不在本次修复范围内。
 HMAC 私钥属于宿主进程，公开摘要用于核对证据身份，不能作为离线公开签名验真。
 原始会话、任务数据、控制 token 和机器配置未发布到仓库。
+
+## GitHub 安装适配修订
+
+0.2.0 本地包通过上述任务验证，但首次从 GitHub 安装后，Desktop 的 pnpm hoisted 索引
+使用固定提交的 codeload URL，旧身份检查把 URL 与 package.version 直接比较，导致
+启动时 host_qualification_unavailable。此时没有启动模型或签发证书。
+
+0.2.1 为非关键插件的直接依赖增加来源身份适配：仅接受 40 位固定提交的 GitHub URL，
+同时匹配 profile 声明、lock importer 完整引用、package 版本、tarball URL、SHA-512 字段
+和 snapshot。浮动分支、缺失锁定或不一致均拒绝；关键 Host SDK 不允许走此分支，
+继续通过原有 registry SRI、模块字节及依赖路由审计。没有修改或伪造宿主安装元数据。
+
+新增 10 项测试覆盖成功元组、版本/名称/提交/声明/URL 不一致、缺失 SRI/snapshot、
+浮动引用与关键 peer 替换拒绝、原 registry/file 行为。对实际 GitHub 安装树执行修订后的
+完整宿主资格链，得到 supported 且 Goal capability 可用。

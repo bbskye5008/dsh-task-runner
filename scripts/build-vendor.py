@@ -40,6 +40,9 @@ def main():
     ps=replace(ps,'const result = await '+call+';','const result = await unifiedGate.verify(session, loop.verify, () => '+call+', AbortSignal.any([signal, controller.signal, this.lifetime]));')
     ps='import { runPuaAcceptance } from "../../../runtime/acceptance.mjs";\n'+ps
     ps=ps.replace('() => '+call, '() => unifiedGate.required(session) ? runPuaAcceptance(session, AbortSignal.any([signal, controller.signal, this.lifetime])) : '+call)
+    ds='import { installedReferenceMatches } from "../../runtime/installation-identity.mjs";\n'+(ROOT/'scripts/upstream-guard-domain.js').read_text()
+    ds=replace(ds,'if (manifest.name !== name || typeof manifest.version !== "string" || !version$1.startsWith("file:") && manifest.version !== version$1.split("(", 1)[0]) throw Error("Desktop installation identity mismatch");', 'if (!installedReferenceMatches(name, version$1, manifest, {critical:CRITICAL_NAMES.includes(name),lockText:session.readFile(join(profile,"pnpm-lock.yaml")).toString("utf8"),profileManifest:session.readJson(join(profile,"package.json"))})) throw Error("Desktop installation identity mismatch");')
+    (ROOT/'vendor/guard-dist/domain-CRL0HSOC.js').write_text(ds)
     (ROOT/"vendor/guard-dist/index.js").write_text(s)
     (ROOT/"vendor/pua/lib/runtime.js").write_text(ps)
 if __name__=="__main__":main()

@@ -1,3 +1,4 @@
+import { installedReferenceMatches } from "../../runtime/installation-identity.mjs";
 import { createRequire } from "node:module";
 import * as nodeFs from "node:fs";
 import { closeSync, constants, existsSync, fchmodSync, fstatSync, fsyncSync, linkSync, lstatSync, mkdirSync, mkdtempSync, openSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, statSync, unlinkSync, writeFileSync, writeSync } from "node:fs";
@@ -11307,7 +11308,7 @@ function desktopHoistedProfileGraph(profile, session) {
 			const configured = resolve(modules, id), root = session.realpath(configured);
 			if (root !== configured || !root.startsWith(modules + sep) || roots.has(root)) throw Error("Desktop installation location escaped or linked");
 			const manifest = session.readJson(join(root, "package.json"));
-			if (manifest.name !== name || typeof manifest.version !== "string" || !version$1.startsWith("file:") && manifest.version !== version$1.split("(", 1)[0]) throw Error("Desktop installation identity mismatch");
+			if (!installedReferenceMatches(name, version$1, manifest, {critical:CRITICAL_NAMES.includes(name),lockText:session.readFile(join(profile,"pnpm-lock.yaml")).toString("utf8"),profileManifest:session.readJson(join(profile,"package.json"))})) throw Error("Desktop installation identity mismatch");
 			roots.add(root);
 			locations.add(id);
 			records[id] = {
