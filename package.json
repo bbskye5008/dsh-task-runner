@@ -1,0 +1,73 @@
+{
+  "name": "dsh-task-runner",
+  "version": "0.2.0",
+  "description": "PUA + Guard task launcher with candidate-bound acceptance, at most 8 rounds and 90 minutes",
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "./index.mjs",
+  "exports": {
+    ".": "./index.mjs",
+    "./pua": "./vendor/pua/lib/index.js",
+    "./guard": "./guard.mjs"
+  },
+  "bin": {
+    "dsh-task": "./cli.mjs"
+  },
+  "files": [
+    "*.mjs",
+    "runtime",
+    "vendor",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE",
+    "VALIDATION.md",
+    "NOTICE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "engines": {
+      "dsh": "0.2.0-rc.2"
+    }
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.4",
+    "@deepseek-ai/dsh-agent": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-commands": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-goal": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-jobs": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-llm": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-session": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-tool-goal": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-tools": "0.2.0-rc.2",
+    "@deepseek-ai/schemastery": "^3.18.4"
+  },
+  "dependencies": {
+    "js-yaml": "4.3.2",
+    "shell-quote": "1.8.3",
+    "zod": "4.4.3"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "build:vendor": "python3 scripts/build-vendor.py",
+    "prepack": "node scripts/check-pack.mjs"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "acceptance",
+    "completion-gate"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bbskye5008/dsh-task-runner.git"
+  },
+  "homepage": "https://github.com/bbskye5008/dsh-task-runner#readme",
+  "bugs": {
+    "url": "https://github.com/bbskye5008/dsh-task-runner/issues"
+  }
+}

@@ -1,0 +1,13 @@
+# This composite owns the server instances while installed. Remove this bundle
+# to restore the preceding standalone plugin rows; their files are untouched.
+- id: michengai-pua
+  disabled: true
+- id: context-guard
+  disabled: true
+- insert:
+    - id: task-runner-pua
+      name: dsh-task-runner/pua
+    - id: task-runner-guard
+      name: dsh-task-runner/guard
+    - id: task-runner
+      name: dsh-task-runner

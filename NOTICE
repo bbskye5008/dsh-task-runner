@@ -1,0 +1,12 @@
+dsh-task-runner is a local composite integration, not an official DeepSeek product.
+
+Includes server components from:
+- MichengAI/dsh-pua 0.3.27 (Apache-2.0), with its LICENSE and NOTICE under vendor/pua/.
+- GreenLv/dsh-completion-guard 0.9.0 (Apache-2.0), local protocol-repair source commit
+  d7c4f80860f2ce702741701db33784bc7b7d78c9, license vendor/GUARD-LICENSE.
+
+Modifications: relative package-local completion bridge imports, per-session
+frozen task profiles, independent snapshot acceptance, completion/candidate/Goal
+certificate binding, command/CLI launch, and bounded task lifetime.
+The original component authors do not endorse these modifications.
+Base file hashes are recorded in vendor/base-provenance.json.

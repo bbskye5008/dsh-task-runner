@@ -1,0 +1,17 @@
+{
+  "guard_version": "0.9.0",
+  "local_source_commit": "d7c4f80860f2ce702741701db33784bc7b7d78c9",
+  "protocol": "native-file-contract/v1",
+  "files": {
+    "native-task-contract.d.ts": "7e2ade246809129009206de1c9fa2886c651efb6aa9c51889ad8489f569a9c50",
+    "index.js": "43991dcd67ca77cb4fa4d1ba1e346aa8e07e5f7959776d5335024ae357958525",
+    "domain-CRL0HSOC.js": "ec61184c45186838f82b68f065b0c296298fb21eee8753165ba876745de862e4",
+    "index.d.ts": "38fa824cd1e44d7ddd7f52e8fd7e873dc30556ddaa17448e1e3e40db238320e9",
+    "native-task-contract.js": "778d4cb881f092b655361887176567cf9d52fc7b4a543f27d2f442e8e2291384",
+    "index-D1yHH3JL.d.ts": "86d7085c88376450644cc91b2bc47e7b918f5aa88be246145fe43274ec8e0a08",
+    "domain/index.js": "1d7a73a6c15452fe0c893a6870a736b612a176f175edf9223e366d99ffe0c13f",
+    "domain/index.d.ts": "6a3b9248c28ab2d502a755f0bfeef610b096e30854e94b02d59e4d1fbd1091f3"
+  },
+  "pua_version": "0.3.27",
+  "pua_original_sha256": "fe37be1374bab0b3adb01514ac2dc159451a2006eadceb7d99d6ca647d35bc4a"
+}
