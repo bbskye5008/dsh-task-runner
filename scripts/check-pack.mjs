@@ -4,5 +4,4 @@ const p=JSON.parse(readFileSync('package.json','utf8'));
 for(const file of ['index.mjs','guard.mjs','cli.mjs','runtime/acceptance.mjs','runtime/profile-store.mjs','vendor/guard-dist/index.js','vendor/pua/lib/runtime.js','vendor/pua/assets/pua/upstream.json','README.md','LICENSE','NOTICE','cordis.patch.yml'])if(!existsSync(file))throw Error('missing_pack_file:'+file);
 for(const file of ['vendor/guard-dist/index.js','vendor/pua/lib/runtime.js'])if(/file:\/\/\/|\/Users\/spike/.test(readFileSync(file,'utf8')))throw Error('nonportable_build:'+file);
 if(p.scripts.prepare||p.scripts.install||p.scripts.postinstall)throw Error('install_scripts_must_not_be_required');
-if(p.version!=='0.2.0')throw Error('unexpected_release_version');
 console.log('Prebuilt bundle and relative bridges present; no install-time build required.');

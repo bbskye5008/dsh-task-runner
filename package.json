@@ -1,6 +1,6 @@
 {
   "name": "dsh-task-runner",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "PUA + Guard task launcher with candidate-bound acceptance, at most 8 rounds and 90 minutes",
   "type": "module",
   "license": "Apache-2.0",

@@ -1,4 +1,4 @@
-# 0.2.1 验证记录（含 0.2.0 任务基线）
+# 0.2.2 验证记录（含 0.2.0 任务基线）
 
 日期：2026-10-15。环境：macOS、DeepSeek Harness 0.2.0-rc.2、PUA 0.3.27、Guard 0.9.0。
 真实模型路由：deepseek-account / deepseek-flash，reasoningEffort=high。
@@ -63,3 +63,5 @@ HMAC 私钥属于宿主进程，公开摘要用于核对证据身份，不能作
 新增 10 项测试覆盖成功元组、版本/名称/提交/声明/URL 不一致、缺失 SRI/snapshot、
 浮动引用与关键 peer 替换拒绝、原 registry/file 行为。对实际 GitHub 安装树执行修订后的
 完整宿主资格链，得到 supported 且 Goal capability 可用。
+
+0.2.2 另移除开发打包脚本对旧版本号的固定判断，支持按当前 package 版本生成安装包。

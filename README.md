@@ -17,7 +17,7 @@ DeepSeek Harness 0.2.0-rc.2，PUA 0.3.27、Guard 0.9.0。其他宿主版本未�
 再安装本组合包。Desktop profile 由 Electron 应用管理，请使用界面的插件安装入口；
 dsh CLI 会拒绝直接修改这个受管 profile。
 
-组合包安装来源：`github:bbskye5008/dsh-task-runner#v0.2.1`。
+组合包安装来源：`github:bbskye5008/dsh-task-runner#v0.2.2`。
 源码仓库：https://github.com/bbskye5008/dsh-task-runner 。
 已提交预构建 JavaScript，下载后无需编译；GitHub 安装与市场收录是两件事。
 原 Guard 的 Desktop 宿主资格链需要 profile 保留它的正式安装记录；本包不绕过该检查。
