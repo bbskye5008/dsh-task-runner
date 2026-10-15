@@ -65,3 +65,51 @@ HMAC 私钥属于宿主进程，公开摘要用于核对证据身份，不能作
 完整宿主资格链，得到 supported 且 Goal capability 可用。
 
 0.2.2 另移除开发打包脚本对旧版本号的固定判断，支持按当前 package 版本生成安装包。
+# 历史检查点：0.3.0 需求准备阶段（后续结果见 0.3.4）
+
+2026-10-15 local source and package validation:
+
+- 54 automated tests passed, including unchanged PUA/Guard tests and preparation
+  handoff, artifact binding, frozen acceptance and upstream skill provenance.
+- Actual Desktop installer rejected upstream `specworkflow@0.1.1`: its SDK peer
+  `@deepseek-ai/dsh-skill-filesystem ^0.1.0-rc.6` does not match installed
+  `0.2.0-rc.2`. The installer reported nothing installed; no exemption was granted.
+- Added a current-SDK bundled-provider port exposing only the unchanged upstream
+  `to-grill` and `to-spec` skills. All 11 included upstream files match npm 0.1.1
+  bytes; MIT license and provenance are included.
+- `scripts/check-specworkflow-sdk.mjs`, run using the installed Desktop's actual
+  Electron/SDK, discovered exactly those two skills and loaded both full bodies
+  and language references without warnings. This is an SDK integration check,
+  not proof that the new package has been installed or the full workflow passed.
+- The medium Chinese CSV task, predetermined business decisions and separate
+  29-check independent acceptance script are prepared. Original prototype passes
+  only 3/29, so it cannot pass final independent acceptance unchanged.
+- At this checkpoint, 0.3.0 is a local package only. New-package installation,
+  real requirement interview, operator approval, execution, failure probes and
+  final independent acceptance are still pending. No complete-run claim is made.
+
+Evidence: `outputs/deepseek-harness-specworkflow-20261015/` in the local workspace;
+`core-tests.log`, `sdk-smoke.json`, `independent-baseline.json`, `progress.json`.
+
+
+# 0.3.4 前置需求流程与最终真实联调
+
+2026-10-15，实际安装并重启 Harness 0.2.0-rc.2；模型 deepseek-account / deepseek-flash，High。
+
+- 原始 SpecWorkflow 0.1.1 因 SDK peer 不兼容未直接安装；组合包适配当前 SDK，仅包含字节不变的前两阶段及引用材料，共11个原始文件。
+- 修复真实工具参数schema、准备阶段转换工具允许列表、长中文验收入口，以及临时目录在候选内导致的递归复制。
+- 57项核心测试通过；真实SDK工具与门禁检查通过（SDK smoke的agent factory/start使用替身）。安装包176个文件与实际安装文件一致。
+- 新中文CSV任务实际经过 to-grill、to-spec、生成脚本、具体版本审阅和摘要批准。旧摘要真实调用被拒，确认前原有4个文件未改变。
+- 原型先验收3/39并拒签，提前完成Goal被拒；随后模型自行实施，自测34/34，冻结验收39/39。
+- 同一候选 Goal rev1→rev2 重新签证；PUA最终验收放行，宿主自动complete：1轮、327.231秒。
+- 外部原冻结独立验收29/29（原型3/29）。封存副本重跑生成验收39/39；14项完成证据全部通过，冻结文件与目录树未变。
+- 首次执行0.3.3因验收临时目录环境问题取消，没有证书；业务独立验收同为29/29。修复后从原型重新走完整流程，累计2轮，含修复和重新准备的总墙钟时间1286.007秒；第二次7轮/70分钟的截止未超过原8轮/90分钟的截止。
+
+最终候选：`7915aec9762547c17f61487e11f6ae5d92fbf0a32dbb36db863a61005126ccdb`。
+rev1证书：`caf9fceb3d92318fbb50ad6772cc3f4e3bfe3c0bd5e7f9be828b611473504e60`。
+rev2证书：`9d2d3f9a0bb56773dc35992288abe6dbb9684745988d7dc9895a75c4b85b31a1`。
+
+本次证明一个任务的完整联调，未声称满90分钟连续运行或跨平台兼容。自动生成的验收仍需审阅，本次在冻结前修正了漏测、错误期望和私有函数耦合。HMAC有效性由完成时的实际宿主验证，外部核对候选字节与记录绑定，不是公开离线签名验真。
+
+本地完整证据：`outputs/deepseek-harness-specworkflow-20261015/独立验收与联调报告.txt`、`completion-independent-audit.json`、`independent-final.json`、`final-run/`、`archived-candidate/`。
+以上是 0.3.4 发布前的本地包与真实客户端验证记录。本次发布将这些结果纳入正式文档；版本标签的 GitHub 安装验证见对应 Release 说明。

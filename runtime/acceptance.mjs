@@ -15,10 +15,12 @@ export async function executeAcceptance(run,label='acceptance',signal=run.reques
   assertRun(run);
   combined.throwIfAborted();
   try{if((await lstat(join(run.p.cwd,'node_modules'))).isDirectory())await symlink(join(run.p.cwd,'node_modules'),join(snapshot,'node_modules'),'dir');}catch(e){if(e.code!=='ENOENT')throw e;}
-  await mkdir(join(snapshot,'.scratch'),{recursive:true});
+  // Verifiers may clone their candidate with tempfile + copytree. Keeping
+  // temporary files beside the candidate prevents a recursive self-copy.
+  const scratch=join(dir,'scratch');await mkdir(scratch,{recursive:true});
   const timeoutMs=Math.max(1,Math.min(run.checkTimeoutMs,run.deadline-Date.now()));
   const result=await new Promise((done,reject)=>{
-    const child=spawn('/bin/sh',['-c',run.verify],{cwd:snapshot,detached:true,env:{...process.env,PYTHONDONTWRITEBYTECODE:'1',TMPDIR:join(snapshot,'.scratch'),DSH_TASK_WORKSPACE:snapshot},stdio:['ignore','pipe','pipe']});
+    const child=spawn('/bin/sh',['-c',run.verify],{cwd:snapshot,detached:true,env:{...process.env,PYTHONDONTWRITEBYTECODE:'1',TMPDIR:scratch,DSH_TASK_WORKSPACE:snapshot},stdio:['ignore','pipe','pipe']});
     let stdout='',stderr='',timedOut=false,closed=false;
     const kill=()=>{try{process.kill(-child.pid,'SIGKILL');}catch{child.kill('SIGKILL');}};
     const abort=()=>kill();

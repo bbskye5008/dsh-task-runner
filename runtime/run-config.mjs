@@ -12,6 +12,7 @@ export function createRun(input,home) {
   const frozen=discoverFrozen(input),objective='完成当前任务、冻结验收与交付（'+id+'）';
   const journal='TASK_GATE_PROGRESS.md',final='TASK_GATE_FINAL.md';
   const protocol=[
+    ...(input.preparation?['需求澄清、规格和验收脚本已由用户确认并冻结（'+input.preparation.id+'，摘要 '+input.preparation.digest+'）。当前只实施此版本；不要重新进入 to-grill/to-spec、另启 Goal 后端或改写冻结标准。']:[]),
     '这是已授权长任务。真实 Goal 已由宿主创建；保持其目标和轮次上限，禁止 clear/rebind/off 或伪造证据。',
     '先调用 context_guard_prepare 读取完整契约和真实 Goal。自主实施，验收失败后在剩余预算内修复。',
     '已有验收测试和配置被冻结；不要修改这些文件。需要新增自测时使用独立 self-tests/ 目录。',
@@ -29,6 +30,7 @@ export function createRun(input,home) {
   const sources=[{name:'user-task-and-protocol',path:userMessage,sha256:hash(root),bindings:[{start:0,end:root.length,checks:['command','engine-policy']}]}];
   for(const name of ['AGENTS.md','TASK.txt','TASK.md']){const path=join(input.workspace,name);if(frozen.files[path]){const content=regular(path).toString('utf8');if(content.length)sources.push({name,path,sha256:frozen.files[path],bindings:[{start:0,end:content.length,checks:['command','engine-policy']}]});}}
   const p={schema:'dsh-task-gate-profile/v1',id,cwd:input.workspace,goal:{objective,maxRounds:input.rounds},implementation:['.'],implementationExcludes:['.git','node_modules','.scratch',...frozen.lockedTrees],journal,delivery:{files:[final],minBytes:80},phases:[{id:'implementation-and-delivery',name:'实现、独立验收和交付',check:{...spec}}],acceptance:{...spec},sources,lockedFiles:frozen.lockedFiles,lockedTrees:frozen.lockedTrees,lockedTreeInventory:treeInventory(input.workspace,frozen.lockedTrees),dependencies:Object.keys(frozen.files),userMessage,protocol};
+  if(input.preparation)p.preparation=input.preparation;
   const profile=join(dir,'profile.json');writeFileSync(profile,JSON.stringify(p,null,2)+'\n');
   const run={id,sessionId,dir,p,profileHash:hash(JSON.stringify(p)),verify:input.verify,checkTimeoutMs:120000,started,deadline:started+Math.ceil(input.minutes*60000),status:'active',abort:new AbortController(),frozenFiles:{...frozen.files,[profile]:hash(regular(profile)),[userMessage]:hash(root)},externalTrees:frozen.externalTrees,rootMessage:root};
   const pin=path=>{const st=lstatSync(path);if(st.isDirectory())for(const n of readdirSync(path))pin(join(path,n));else if(st.isFile()&&/\.(?:mjs|js|json)$/.test(path))run.frozenFiles[path]=hash(readFileSync(path));};

@@ -11,6 +11,46 @@ is recorded as incomplete.
 
 This is an independent integration, not an official DeepSeek product.
 
+## Requirements preparation (0.3.4)
+
+Install the 0.3.4 composite package in Desktop and restart Harness. It includes
+unchanged SpecWorkflow 0.1.1 `to-grill` / `to-spec` skills and references with
+their MIT license and byte provenance. Its registration adapter targets the
+installed DSH 0.2.0-rc.2 bundled-provider SDK, including a real-SDK load check.
+The upstream npm plugin declares a 0.1.x SDK peer range and is rejected by this
+Desktop installer; this port grants no version exemption and does not alter the
+upstream plugin's metadata. No separate SpecWorkflow installation is needed.
+Start with only:
+
+```text
+/task-run --workspace "/absolute/workspace" --task "Describe what you want"
+```
+
+Omitting `--verify` starts a separate preparation conversation using the source
+model settings. It loads SpecWorkflow `to-grill`, saves clarified requirements,
+then loads `to-spec` and saves the specification. Only after these two no-code
+stages does the adapter allow acceptance scripts to be written, in its dedicated
+`.spec-workflow/prep-UUID/` directory. Production code remains unchanged.
+
+Every acceptance criterion maps to a command and evidence files. A host-generated
+dispatcher runs all criteria and fails if any fails. Review the requirements,
+specification, scripts and hashes with `dsh-task review PREP_ID`. Answer questions
+in the preparation conversation or with `dsh-task reply PREP_ID "answer"`.
+The returned `/task-run approve PREP_ID DIGEST` (or terminal `dsh-task approve`)
+confirms that exact draft, freezes its full artifact tree and starts the existing
+PUA + Guard runner automatically. Any changed or added artifact invalidates the
+old approval. Source changes during preparation require a fresh preparation.
+
+Preparation cannot approve itself, edit production, run scripts or start another
+Goal/workflow. The **8-round / 90-minute execution cap** begins when the reviewed
+draft is approved; interviewing and waiting for human decisions do not start PUA.
+Verification, repairs and recertification do not reset the execution deadline.
+Generated tests still need a coverage review. The adapter requires executable
+checks for every completion criterion; subjective requirements must be resolved
+before execution. An existing `--verify` command retains the direct execution path
+and does not invoke the preparation stages. Version 0.3.4 includes the preparation
+workflow and its integration fixes. See `VALIDATION.md` for the completed live test.
+
 ## Supported environment and installation
 
 Currently verified on **macOS / DeepSeek Harness Desktop 0.2.0-rc.2** with the
@@ -23,7 +63,7 @@ In Desktop, open **Plugins → Add plugin** and install these sources in order:
 | --- | --- | --- |
 | 1 | [Original PUA](https://github.com/MichengAI/dsh-pua) | `@michengai/dsh-pua@0.3.27` |
 | 2 | [Original Completion Guard](https://github.com/GreenLv/dsh-completion-guard) | `dsh-completion-guard@0.9.0` |
-| 3 | Task Runner | `github:bbskye5008/dsh-task-runner#v0.2.2` |
+| 3 | Task Runner | `github:bbskye5008/dsh-task-runner#v0.3.4` |
 
 Keep already installed matching versions. Restart Harness after installation.
 Task Runner does not automatically install its prerequisites or change model or
@@ -36,9 +76,9 @@ absolute path** in Desktop's installer. Remote Release asset URL installation is
 not a verified route for this version, so the catalog submission intentionally
 omits the optional `tarball` field and uses GitHub source installation.
 
-Market discovery requires the catalog PR to be merged and its catalog to sync.
-Until then, install using the source above. Market users still need the two
-prerequisites and a restart.
+GitHub releases and market catalog updates are separate. Installed plugins do
+not update automatically. Use the pinned source above for this release; a market
+entry may still refer to a different cataloged version.
 
 ## Run a task
 
@@ -124,12 +164,15 @@ remove only that link after checking its target.
 
 ## Validation, scope and attribution
 
-[Validation record](VALIDATION.md): 36 core tests; a Flash / High task baseline
-completed automatically in 2 rounds and 307 seconds with independent acceptance
-and 22 candidate self-tests. The final 0.2.2 GitHub installation was separately
-restarted and checked with a real rejection/round-limit regression. Deadline
-probes used shorter budgets; no claim of a continuous 90-minute trial or
-cross-platform validation is made.
+[Validation record](VALIDATION.md): 57 core tests passed. A real Flash / High
+Chinese CSV task went through requirements clarification, specification, generated
+acceptance, digest approval, implementation and automatic completion in 1 round /
+327.231 seconds. Frozen generated acceptance passed 39/39, candidate self-tests
+34/34, and a separate pre-frozen business evaluator 29/29. Early Goal completion
+was rejected; the same candidate was recertified after Goal revision 1 → 2.
+This run demonstrates recovery within one round, not a full eight-round retry
+trial. No continuous 90-minute or cross-platform validation is claimed.
+Release changes are listed in [CHANGELOG.md](CHANGELOG.md).
 
 The gate only enforces the supplied acceptance contract. It does not prove that
 the command covers every requirement, authenticate every dependency byte, or

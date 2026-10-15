@@ -4,6 +4,10 @@ Includes server components from:
 - MichengAI/dsh-pua 0.3.27 (Apache-2.0), with its LICENSE and NOTICE under vendor/pua/.
 - GreenLv/dsh-completion-guard 0.9.0 (Apache-2.0), local protocol-repair source commit
   d7c4f80860f2ce702741701db33784bc7b7d78c9, license vendor/GUARD-LICENSE.
+- MoonCoder-HAPPY/SpecWorkflow npm 0.1.1 (MIT, copyright 2026 jingdan):
+  unchanged to-grill and to-spec skills and references under vendor/specworkflow/.
+  License and file provenance are included there. specworkflow.mjs ports their
+  registration to the installed DSH 0.2.0-rc.2 SDK and exposes only these stages.
 
 Modifications: relative package-local completion bridge imports, per-session
 frozen task profiles, independent snapshot acceptance, completion/candidate/Goal

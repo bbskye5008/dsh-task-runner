@@ -45,6 +45,12 @@ test('acceptance command runs in an independent snapshot',async()=>{
  const f=fixture("printf generated > artifact.txt");writeFileSync(join(f.workspace,'source.txt'),'original');const r=f.run(),before=candidateDigest(f.workspace);
  const x=await executeAcceptance(r);assert(x.ok);assert.notEqual(x.snapshot,f.workspace);assert(!existsSync(join(f.workspace,'artifact.txt')));assert.equal(candidateDigest(f.workspace),before);assert.equal(readFileSync(join(x.snapshot,'artifact.txt'),'utf8'),'generated');
 });
+test('temporary verifier clones stay outside the candidate and cannot recursively copy themselves',async()=>{
+ const f=fixture('python3 clone_check.py');
+ writeFileSync(join(f.workspace,'clone_check.py'),"import pathlib, shutil, tempfile\nwith tempfile.TemporaryDirectory() as tmp:\n    target = pathlib.Path(tmp) / 'clone'\n    assert pathlib.Path.cwd().resolve() not in target.resolve().parents, 'temporary clone is inside candidate'\n    shutil.copytree(pathlib.Path.cwd(), target)\n    assert (target / 'clone_check.py').is_file()\n");
+ const r=f.run(),before=candidateDigest(f.workspace),result=await executeAcceptance(r);
+ assert.equal(result.ok,true,result.stderr);assert.equal(candidateDigest(f.workspace),before);
+});
 test('nonzero exit cannot be overridden by printed pass text',async()=>{
  const f=fixture('printf "TASK_GATE_RESULT true"; exit 7');const x=await executeAcceptance(f.run());assert(!x.ok);assert.equal(x.exitCode,7);
 });

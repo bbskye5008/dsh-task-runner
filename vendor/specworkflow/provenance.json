@@ -1,0 +1,24 @@
+{
+  "schema": "specworkflow-vendor-provenance/v1",
+  "upstream": {
+    "name": "specworkflow",
+    "version": "0.1.1",
+    "repository": "https://github.com/MoonCoder-HAPPY/SpecWorkflow",
+    "tarball": "https://registry.npmjs.org/specworkflow/-/specworkflow-0.1.1.tgz",
+    "sha256": "a15e95596cc11765a026f9c4e11bad3976bb2383e6fc0ca661f90ead41b0bd94"
+  },
+  "port": "Only provider registration is adapted in specworkflow.mjs for DSH 0.2.0-rc.2; skill files are unchanged.",
+  "files": {
+    "LICENSE": "2cd767f3075770765034f5c9862b6a46e74dfe6fdfe11faa06293660a03e44d1",
+    "skill-package/to-grill/SKILL.md": "9b68ba6c81054b9338c49e9f37c64f384a0aafe8bd19c73d278f23204b484fe4",
+    "skill-package/to-grill/agents/openai.yaml": "12a5739930998f77ed4247823975a2c1fa1b97e9dce4120aa68417ec9698d6b5",
+    "skill-package/to-grill/references/bilingual-output.md": "87530c5ab1c957fcefd53d6142bff35f430c043a64063528cefdadef442ea73a",
+    "skill-package/to-spec/SKILL.md": "27706aa7c8d77bd1452e6e9057bdc80e7fa8a26a7dad23bcc145ed1c674a54e1",
+    "skill-package/to-spec/agents/openai.yaml": "4e105adccfe8a3f72a1ce57b2ee170e41d905591d270bb30f8fcb2886a84e56b",
+    "skill-package/to-spec/references/additional-agent-runtimes.md": "b67cfe89a8befc98339276b6a0c1d58880f56864b9ae0e0b82ab2550c689cbbd",
+    "skill-package/to-spec/references/agent-runtime-adapters.md": "000d866314c1a747315168ad5a9099a453cc11fd52cfb873c4cc4ecd21ecf1d2",
+    "skill-package/to-spec/references/bilingual-output.md": "87530c5ab1c957fcefd53d6142bff35f430c043a64063528cefdadef442ea73a",
+    "skill-package/to-spec/references/goal-mode.md": "bc8fc5b0b28eaf289d6a630549429805b8029e123c2da8fbeb5bfeebf364728f",
+    "skill-package/to-spec/references/runtime-discovery.md": "db0e16aa201e1ea20c014c3041fe8b367f3352270210530ab15cec5d5d28cd6e"
+  }
+}

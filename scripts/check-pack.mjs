@@ -2,6 +2,8 @@ import {readFileSync,existsSync} from 'node:fs';
 import {resolve} from 'node:path';
 const p=JSON.parse(readFileSync('package.json','utf8'));
 for(const file of ['index.mjs','guard.mjs','cli.mjs','runtime/acceptance.mjs','runtime/profile-store.mjs','vendor/guard-dist/index.js','vendor/pua/lib/runtime.js','vendor/pua/assets/pua/upstream.json','README.md','LICENSE','NOTICE','cordis.patch.yml'])if(!existsSync(file))throw Error('missing_pack_file:'+file);
+for(const file of ['runtime/preparation.mjs','runtime/preparation-host.mjs'])if(!existsSync(file))throw Error('missing_preparation_file:'+file);
+for(const file of ['specworkflow.mjs','vendor/specworkflow/LICENSE','vendor/specworkflow/provenance.json','vendor/specworkflow/skill-package/to-grill/SKILL.md','vendor/specworkflow/skill-package/to-spec/SKILL.md'])if(!existsSync(file))throw Error('missing_specworkflow_file:'+file);
 for(const file of ['vendor/guard-dist/index.js','vendor/pua/lib/runtime.js'])if(/file:\/\/\/|\/Users\/spike/.test(readFileSync(file,'utf8')))throw Error('nonportable_build:'+file);
 if(p.scripts.prepare||p.scripts.install||p.scripts.postinstall)throw Error('install_scripts_must_not_be_required');
 console.log('Prebuilt bundle and relative bridges present; no install-time build required.');

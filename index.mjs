@@ -10,6 +10,7 @@ import {registerRun,runFor,assertRun} from './runtime/profile-store.mjs';
 import {Budget} from './runtime/budget.mjs';
 import {gate} from './runtime/completion-gate.mjs';
 import {existingNativeTask} from './runtime/native-task.mjs';
+import {installPreparationHost} from './runtime/preparation-host.mjs';
 
 export const name='task-runner';
 export const inject=['agents','commands','goals','sessions','tools','puaConfiguration','taskRunnerHost','agentPresets'];
@@ -57,16 +58,20 @@ export function apply(ctx) {
     if(id){const agent=ctx.agents.get(id);if(!agent)throw Error('origin_session_not_live');return agent;}
     return ctx.agents.list().filter(a=>!a.session.header.parentSession).sort((a,b)=>b.session.header.createdAt-a.session.header.createdAt)[0];
   };
+  const preparations=installPreparationHost(ctx,{home,start,latestOrigin});
+  const launch=(raw,origin,signal)=>{const input=parseInput(raw,{allowPreparation:true});return input.verify===undefined?preparations.prepare(input,origin,signal):start(input,origin,signal);};
   const command=async inv=>{
     try {
       const s=inv.rawInput.trim();
-      if(!s||s==='help')return {kind:'success',text:'用法：/task-run --workspace "/绝对路径" --task "完整任务" --verify "独立验收命令"；默认最多 8 轮、90 分钟。status [ID] 查看；cancel ID 取消。也支持完整 JSON 对象。'};
-      if(s==='status'||s.startsWith('status ')){const id=s.slice(6).trim();return {kind:'success',text:JSON.stringify(id?snapshot(live.get(id)??(()=>{throw Error('run_not_live');})()):[...live.values()].map(snapshot),null,2)};}
-      if(s.startsWith('cancel ')){const run=live.get(s.slice(7).trim());if(!run)throw Error('run_not_live');stop(run,'cancelled');return {kind:'success',text:JSON.stringify(snapshot(run))};}
-      const result=await start(parseInput(s),inv.agent,inv.signal);return {kind:'success',text:'长任务已启动：'+JSON.stringify(result)};
+      if(!s||s==='help')return {kind:'success',text:'用法：/task-run --workspace "/绝对路径" --task "想做的事情"，进入 SpecWorkflow 澄清、规格、验收脚本准备；review PREP_ID 查看待确认版本；approve PREP_ID DIGEST 确认并执行。提供 --verify "独立验收命令" 可直接执行。正式执行最多 8 轮、90 分钟。status [ID] 查看；cancel ID 取消。'};
+      if(s==='status'||s.startsWith('status ')){const id=s.slice(6).trim();return {kind:'success',text:JSON.stringify(id?.startsWith('prep-')?preparations.status(id):id?snapshot(live.get(id)??(()=>{throw Error('run_not_live');})()):{runs:[...live.values()].map(snapshot),preparations:preparations.status()},null,2)};}
+      if(s.startsWith('review '))return {kind:'success',text:JSON.stringify(preparations.status(s.slice(7).trim()),null,2)};
+      if(s.startsWith('approve ')){const [,id,digest,...extra]=s.split(/\s+/);if(extra.length)throw Error('approve_requires_id_and_digest');return {kind:'success',text:'已确认并启动：'+JSON.stringify(await preparations.approve(id,digest,inv.agent,inv.signal))};}
+      if(s.startsWith('cancel ')){const id=s.slice(7).trim();if(id.startsWith('prep-'))return {kind:'success',text:JSON.stringify(preparations.cancel(id))};const run=live.get(id);if(!run)throw Error('run_not_live');stop(run,'cancelled');return {kind:'success',text:JSON.stringify(snapshot(run))};}
+      const result=await launch(s,inv.agent,inv.signal);return {kind:'success',text:(result.id.startsWith('prep-')?'需求准备已启动：':'长任务已启动：')+JSON.stringify(result)};
     }catch(e){return {kind:'error',text:String(e.message??e)};}
   };
-  ctx.commands.register({name:'task-run',description:'启动有独立验收与证书门禁的长任务，最多 8 轮、90 分钟',input:{hint:'--workspace "/绝对路径" --task "任务" --verify "验收命令"'},handler:command});
+  ctx.commands.register({name:'task-run',description:'先澄清需求并准备验收，确认后执行有证书门禁的长任务，最多 8 轮、90 分钟',input:{hint:'--workspace "/绝对路径" --task "任务" [--verify "验收命令"]'},handler:command});
   const diagnose=run=>{const native=run.agent&&existingNativeTask(run.agent);return {status:snapshot(run),guard:native?{base:native.base(),violations:native.runtime.projection.integrityViolations,activation:native.runtime.activationDiagnostic}:null,qualification:ctx.taskRunnerHost.qualification};};
   ctx.on('agent/pre-step',async({agent},next)=>{
     const run=runFor(agent.session);if(!run)return next();
@@ -120,12 +125,15 @@ export function apply(ctx) {
       socket.pause();
       try{
         const req=JSON.parse(buffer.slice(0,buffer.indexOf('\n')));if(req.token!==token)throw Error('unauthorized_local_request');
-        if(req.id&&!/^task-[a-f0-9-]{36}$/.test(req.id))throw Error('invalid_run_id');
+        if(req.id&&!/^(task|prep)-[a-f0-9-]{36}$/.test(req.id))throw Error('invalid_run_id');
         let value;
-        if(req.action==='start')value=await start(parseInput(JSON.stringify(req.input)),latestOrigin(req.fromSession));
+        if(req.action==='start')value=await launch(JSON.stringify(req.input),latestOrigin(req.fromSession));
+        else if(req.action==='approve')value=await preparations.approve(req.id,req.digest,latestOrigin(req.fromSession));
+        else if(req.action==='reply')value=preparations.reply(req.id,req.message);
+        else if(req.action==='review')value=preparations.status(req.id);
         else if(req.action==='diagnose'){const run=live.get(req.id);if(!run)throw Error('run_not_live');value=diagnose(run);}
-        else if(req.action==='status')value=req.id?(live.has(req.id)?snapshot(live.get(req.id)):JSON.parse(readFileSync(join(home,req.id,'status.json'),'utf8'))):[...live.values()].map(snapshot);
-        else if(req.action==='cancel'){const run=live.get(req.id);if(!run)throw Error('run_not_live');stop(run,'cancelled');value=snapshot(run);}
+        else if(req.action==='status')value=req.id?.startsWith('prep-')?preparations.status(req.id):req.id?(live.has(req.id)?snapshot(live.get(req.id)):JSON.parse(readFileSync(join(home,req.id,'status.json'),'utf8'))):{runs:[...live.values()].map(snapshot),preparations:preparations.status()};
+        else if(req.action==='cancel'){if(req.id.startsWith('prep-'))value=preparations.cancel(req.id);else{const run=live.get(req.id);if(!run)throw Error('run_not_live');stop(run,'cancelled');value=snapshot(run);}}
         else throw Error('unknown_action');
         socket.end(JSON.stringify({ok:true,value})+'\n');
       }catch(e){socket.end(JSON.stringify({ok:false,error:String(e.message??e)})+'\n');}

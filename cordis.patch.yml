@@ -5,6 +5,8 @@
 - id: context-guard
   disabled: true
 - insert:
+    - id: task-runner-specworkflow
+      name: dsh-task-runner/specworkflow
     - id: task-runner-pua
       name: dsh-task-runner/pua
     - id: task-runner-guard

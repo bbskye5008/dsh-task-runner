@@ -4,7 +4,7 @@ import {parse} from 'shell-quote';
 import {spawnSync} from 'node:child_process';
 import {hash,regular,treeInventory} from './profile-store.mjs';
 
-export function parseInput(raw) {
+export function parseInput(raw,{allowPreparation=false}={}) {
   const s=raw.trim();let value;
   if(s.startsWith('{'))value=JSON.parse(s);
   else {
@@ -18,8 +18,10 @@ export function parseInput(raw) {
   if(typeof value.workspace!=='string'||!isAbsolute(value.workspace))throw Error('absolute_workspace_required');
   value.workspace=realpathSync(value.workspace);if(!lstatSync(value.workspace).isDirectory())throw Error('workspace_directory_required');
   if(typeof value.task!=='string'||!value.task.trim()||value.task.length>60000)throw Error('task_required_max_60000_characters');
-  if(typeof value.verify!=='string'||!value.verify.trim()||value.verify.length>8192||value.verify.includes('\0'))throw Error('verification_command_required');
-  const syntax=spawnSync('/bin/sh',['-n','-c',value.verify],{timeout:1000,encoding:'utf8'});if(syntax.status!==0)throw Error('invalid_verification_shell_syntax:'+syntax.stderr);
+  if(!(allowPreparation&&value.verify===undefined)){
+    if(typeof value.verify!=='string'||!value.verify.trim()||value.verify.length>8192||value.verify.includes('\0'))throw Error('verification_command_required');
+    const syntax=spawnSync('/bin/sh',['-n','-c',value.verify],{timeout:1000,encoding:'utf8'});if(syntax.status!==0)throw Error('invalid_verification_shell_syntax:'+syntax.stderr);
+  }
   value.rounds=Number(value.rounds??8);value.minutes=Number(value.minutes??90);
   if(!Number.isInteger(value.rounds)||value.rounds<1||value.rounds>8)throw Error('rounds_must_be_1_to_8');
   if(!Number.isFinite(value.minutes)||value.minutes<=0||value.minutes>90)throw Error('minutes_must_be_at_most_90');
