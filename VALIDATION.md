@@ -25,6 +25,30 @@ Agent 工厂参数的问题已修正；最终冷启动结论来自修正后的�
 [v0.3.7 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.7)，
 不以发布后的结果倒写或移动已发布标签。
 
+### 发布后固定 GitHub 来源与完整桌面重启
+
+固定来源：`github:bbskye5008/dsh-task-runner#v0.3.7`，提交 `928c5fd618f0e84d6298ef321c80096be1caebaf`。
+
+1. 新建完全空的独立 SDK Desktop profile，由官方安装器直接安装固定 GitHub 标签，独立进程冷启动。
+   仅一个外部依赖，无独立 PUA/Guard，资格 `supported`，三条命令成功，182 个安装文件与 Release tgz 逐字节一致。
+2. 另退出完整 Electron 应用，保存原 profile 与 Task Runner 状态，使用全新插件 profile 和状态启动；
+   此 UI 测试保留已有账号登录。初始只有官方 base/web-app，外部依赖为空。
+   在插件界面从上述 GitHub 来源只安装 Task Runner，并点击「立即启用」。
+3. 完全退出并重新打开完整桌面应用，确认原宿主进程已退出、宿主 PID 已变化。
+   实际会话中的 `/task-run help`、`/context-guard on`、`/pua status` 都有成功界面响应。
+   UI 安装的 182 个文件仍与 Release tgz 一致；没有独立 PUA、Guard。
+4. 不传 `--workspace` 创建准备会话，工作区符合来源会话。
+   额外两次模型尝试均因新 profile 的默认 `deepseek-official` 路由缺少 API Key 而 `MISSING_CREDENTIAL`，
+   已显式取消；没有据此宣称模型冒烟、需求澄清内容或长任务通过。
+5. 结束后恢复原 profile 和 Task Runner 状态，原 profile manifest 摘要未变。
+
+完整桌面测试未复制旧插件记录；已有账号登录保留，不能描述成另一台无账号机器实测。
+发布前的无账号 SDK 测试与发布后完整桌面测试分别记证，不混用结论。
+公开附件 `dsh-task-runner-0.3.7.tgz`、`SHA256SUMS`、`installation-validation.json`
+均已匿名回读下载，与上传前本地文件及 GitHub 返回摘要一致。
+
+[发布后机读结果](validation/0.3.7-github-install.json)。标签及 Release 包保持不变，后续文档补充留在 main 与 Release 说明。
+
 ## 0.3.6 跨物理 turn 失败恢复
 
 日期：2026-10-16。macOS / DeepSeek Harness Desktop 0.2.0-rc.2，PUA 0.3.27、Guard 0.9.0。

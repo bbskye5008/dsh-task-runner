@@ -1,0 +1,40 @@
+{
+  "version": "0.3.7",
+  "onlyExternalDependency": "dsh-task-runner",
+  "source": "github:bbskye5008/dsh-task-runner#v0.3.7",
+  "installedFilesCompared": 182,
+  "byteMismatches": [],
+  "standalonePuaInstalled": false,
+  "standaloneGuardInstalled": false,
+  "lockBoundToCommit": true,
+  "fullElectronGuiInstall": true,
+  "clickedEnable": true,
+  "previousHostExited": true,
+  "fullElectronGuiRestart": true,
+  "commandsPassed": [
+    "/task-run help",
+    "/context-guard on",
+    "/pua status"
+  ],
+  "workspaceArgumentOmitted": true,
+  "preparationCreatedInCurrentWorkspace": true,
+  "modelSmokePassed": false,
+  "modelSmokeIssue": "Fresh profile used deepseek-official without an API key. Two preparation attempts stopped at MISSING_CREDENTIAL; both explicitly cancelled. No model completion or execution task is claimed.",
+  "preparationAttempts": 2,
+  "preparationsCancelled": true,
+  "executionTasksStarted": 0,
+  "accountConfigurationRetained": true,
+  "pluginProfileWasFresh": true,
+  "taskRunnerStateWasFresh": true,
+  "schema": "dsh-task-runner-github-desktop-install/v1",
+  "date": "2026-10-16",
+  "tagCommit": "928c5fd618f0e84d6298ef321c80096be1caebaf",
+  "coreTests": {
+    "passed": 87,
+    "total": 87
+  },
+  "originalProfileRestored": true,
+  "sdkFreshProfileQualification": "supported",
+  "sdkProfileHadAccountConfiguration": false,
+  "scope": "Fresh Desktop plugin profile and Task Runner state with existing account login retained for GUI test; separate fresh SDK profile had no copied account configuration. Full Electron restart and three commands passed; model smoke did not pass because the selected API route lacked credentials. No long-task execution result is claimed."
+}

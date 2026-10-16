@@ -71,7 +71,9 @@ In Desktop, open **Plugins → Add plugin** and enter this pinned source:
 github:bbskye5008/dsh-task-runner#v0.3.7
 ```
 
-Fully quit and restart Harness after installation. The single
+Click **Enable now** (or turn on Task Runner in the plugin list), then fully quit
+and restart Harness. Configure a usable account/API model before starting a task.
+The single
 package includes fixed PUA 0.3.27, Guard 0.9.0 and SpecWorkflow 0.1.1 runtimes.
 Standalone PUA/Guard installs are optional; existing servers remain overridden.
 The qualified owner is the actual Task Runner installation plus its pinned
@@ -97,7 +99,13 @@ only external dependency, qualification was supported and all three commands
 passed; 172 payload files are bound by the inventory. Missing legacy server
 targets may produce two compatibility patch warnings, without requiring the
 standalone plugins. This did not rerun the model task or test a separate physical
-machine. Postpublication GitHub installation results are recorded in the
+machine. A second test used the full Desktop UI with a fresh plugin profile and Task Runner
+state, retaining existing account login: GitHub installation, enablement and full
+Electron restart passed; all three commands worked in the new Host process. A
+workspace-defaulted preparation session was created. Two extra model attempts
+stopped with MISSING_CREDENTIAL on the default API route and were cancelled, so
+model task success is not claimed. The original profile was restored.
+Postpublication GitHub installation results are recorded in the
 [v0.3.7 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.7).
 
 The 2026-10-16 live Chinese inventory-audit test used the same Flash/High model,

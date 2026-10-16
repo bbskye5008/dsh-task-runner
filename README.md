@@ -34,10 +34,11 @@ DeepSeek Harness 0.2.0-rc.2，PUA 0.3.27、Guard 0.9.0。其他宿主版本未�
 github:bbskye5008/dsh-task-runner#v0.3.7
 ```
 
-安装后完全退出并重启 Harness。本版不用三次安装，也不会在启动时调用安装器补装组件。
+安装完成点击「立即启用」（或在插件列表打开 Task Runner 开关），再完全退出并重启 Harness。本版不用三次安装，也不会在启动时调用安装器补装组件。
 离线安装时，从 [v0.3.7 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.7)
 下载 `.tgz` 和 `SHA256SUMS`，核对摘要后在同一安装入口选择 `.tgz` 的本地绝对路径。
-安装后重启 Harness，打开项目工作区、选择模型，即可输入 `/task-run --task "我想做的事情"`。
+先在 Harness 配置可用模型：账号用户选择「DeepSeek 账号」下的模型，API 用户需配置对应 API Key。
+打开项目工作区，在已确认模型可用的普通会话中输入 `/task-run --task "我想做的事情"`。
 
 0.3.4 已内置 SpecWorkflow 的 `to-grill`（需求澄清）和 `to-spec`（规格整理），无需单独安装 SpecWorkflow。
 这两个阶段只准备需求、规格和验收；确认后继续由现有 PUA + Guard 执行。
@@ -183,14 +184,21 @@ profile.json / user-message.txt 是冻结契约；checks/ 保存副本和实际�
 
 ## 0.3.7 单插件安装验证
 
-用客户端实际 SDK 和官方插件管理器，在独立空 Desktop profile 只安装 Task Runner，
-再用独立进程冷启动：仅登记 Task Runner 一个外部依赖，没有独立 PUA、Guard；
-宿主资格 `supported`，`/task-run`、PUA 命令及 Guard 激活均通过。87 项回归通过。
-清单校验覆盖 172 个运行及组件文件。本次没有重跑 0.3.6 的模型长任务。
-空 profile 可能出现两条兼容补丁目标不存在的提示，不要求补装原插件。
-此处记录发布前的本地包验证；发布后的干净 GitHub 安装结果见
+发布前本地包、发布后 GitHub 固定标签均经独立空 Desktop profile 验证：
+只登记 Task Runner 一个外部依赖，没有独立 PUA、Guard，宿主资格 `supported`。
+87/87 回归通过；172 个运行及组件文件受清单校验；GitHub 安装的 182 个文件与 Release 包一致。
+
+另以全新插件 profile 和 Task Runner 状态，经完整桌面 UI 从 GitHub 安装、点击启用、
+完全退出并重开 Harness；旧宿主进程已退出，新进程中 `/task-run help`、`/pua status`、
+`/context-guard on` 均成功。该 UI 测试保留已有账号登录，结束后恢复原 profile。
+不传 `--workspace` 可创建位于当前工作区的需求准备会话；额外的两次模型尝试因默认 API 路由
+没有凭据而停止，已取消，不计为模型冒烟通过。本次未重跑长任务。
+空 profile 的两条旧 server 目标不存在提示不要求补装原插件。
+
+详情见 [验证记录](VALIDATION.md#037-单插件安装验证)、
+[发布后机读结果](validation/0.3.7-github-install.json) 和
 [v0.3.7 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.7)。
-详情见 [验证记录](VALIDATION.md#037-单插件安装验证)。
+发布后的文档补充不移动版本标签或替换已发布安装包。
 
 ## 0.3.6 跨物理 turn 实测
 
