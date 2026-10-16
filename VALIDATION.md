@@ -1,5 +1,30 @@
 # 验证记录
 
+## 0.3.7 单插件安装验证
+
+2026-10-16，使用 Harness Desktop 0.2.0-rc.2 实际 SDK、官方 `initProfile` / `runProfile`
+及 `pluginManager.installBundle`，创建独立空 Desktop profile，只安装 Task Runner 本地 tgz。
+profile、lock 和 node_modules 由正式初始化器/安装器生成，未复制旧安装记录、用户配置或账户数据。
+
+安装后以另一个独立进程冷启动，核对：
+
+- profile 只有 Task Runner 一个外部依赖，bundle 为官方 base、web-app 和 Task Runner。
+- 没有 `@michengai/dsh-pua` 或 `dsh-completion-guard` 独立安装目录。
+- 内置 Guard 的完整宿主资格链为 `supported`。
+- 真实 Agent 预设挂载后，`/task-run help`、`/pua status` 及 `/context-guard on` 均成功。
+- 四个组合组件各注册一次；没有向模型发起请求。
+- 清单覆盖 172 个运行及组件文件；87/87 回归通过，包括来源、组件字节/版本、额外文件、链接、错误 profile 和加载主体拒绝。
+
+空 profile 对兼容补丁中两个不存在的原 server 目标产生 `entry not found` 提示；补丁跳过，
+四个组合组件正常加载。该提示不要求补装原插件。早期 SDK 探针缺少 Desktop 环境字段及
+Agent 工厂参数的问题已修正；最终冷启动结论来自修正后的独立进程。
+
+本次没有重跑 0.3.6 的模型长任务，也不将 SDK 安装/命令验证解释为新机器完整 GUI 实测。
+冻结验收、HMAC 签证、Goal 版本绑定、跨 turn 和预算代码未因安装简化而放宽。
+以上为发布前本地包验证。发布后的干净 GitHub 标签安装与冷启动结果记录于
+[v0.3.7 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.7)，
+不以发布后的结果倒写或移动已发布标签。
+
 ## 0.3.6 跨物理 turn 失败恢复
 
 日期：2026-10-16。macOS / DeepSeek Harness Desktop 0.2.0-rc.2，PUA 0.3.27、Guard 0.9.0。

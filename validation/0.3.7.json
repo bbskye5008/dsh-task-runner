@@ -1,0 +1,59 @@
+{
+  "schema": "dsh-task-runner-single-install/v1",
+  "version": "0.3.7",
+  "status": "prepublication-local-install-passed",
+  "date": "2026-10-16",
+  "environment": "macOS / Harness Desktop SDK 0.2.0-rc.2",
+  "installation": {
+    "initializer": "official initProfile",
+    "installer": "official pluginManager.installBundle",
+    "externalDependencies": [
+      "dsh-task-runner"
+    ],
+    "standalonePuaInstalled": false,
+    "standaloneGuardInstalled": false,
+    "coldBootSeparateProcess": true,
+    "source": "local release tarball before publication"
+  },
+  "result": {
+    "qualification": "supported",
+    "taskRunRegistered": true,
+    "bundledGuardEnabled": true,
+    "puaRegistered": true,
+    "componentRows": [
+      {
+        "id": "task-runner-specworkflow",
+        "name": "dsh-task-runner/specworkflow"
+      },
+      {
+        "id": "task-runner-pua",
+        "name": "dsh-task-runner/pua"
+      },
+      {
+        "id": "task-runner-guard",
+        "name": "dsh-task-runner/guard"
+      },
+      {
+        "id": "task-runner",
+        "name": "dsh-task-runner"
+      }
+    ],
+    "bundledPayloadFiles": 172,
+    "coreTests": {
+      "passed": 87,
+      "total": 87
+    },
+    "modelRequestsMade": 0
+  },
+  "knownCompatibilityPatchWarnings": [
+    "patch: entry \"michengai-pua\" not found",
+    "patch: entry \"context-guard\" not found"
+  ],
+  "limits": {
+    "maxRounds": 8,
+    "maxMinutes": 90,
+    "unchanged": true
+  },
+  "scope": "Installation and cold boot using actual SDK; not a new-machine GUI or live long-task test.",
+  "postpublicationVerification": "https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.7"
+}

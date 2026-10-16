@@ -17,5 +17,8 @@ registry integrity, byte or route qualification.
 Version 0.3.6 delegates active-task physical-turn continuation to the native
 Goal driver, retains bounded certificate followups, and requires a final
 standalone completion promise for composite tasks.
+Version 0.3.7 adds composite-install ownership and a pinned bundled-component
+inventory. Standalone PUA/Guard install records are optional; Host SDK audits
+remain enabled.
 The original component authors do not endorse these modifications.
 Base file hashes are recorded in vendor/base-provenance.json.

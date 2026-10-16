@@ -13,9 +13,8 @@ This is an independent integration, not an official DeepSeek product.
 
 ## Requirements preparation
 
-Install the composite package in Desktop and restart Harness. Version 0.3.6
-uses real physical-turn handoffs and is available through the pinned GitHub
-source below. It includes
+Install Task Runner in Desktop and restart Harness. Version 0.3.7 includes PUA,
+Guard and SpecWorkflow without separate prerequisite plugins. It includes
 unchanged SpecWorkflow 0.1.1 `to-grill` / `to-spec` skills and references with
 their MIT license and byte provenance. Its registration adapter targets the
 installed DSH 0.2.0-rc.2 bundled-provider SDK, including a real-SDK load check.
@@ -66,17 +65,18 @@ Currently verified on **macOS / DeepSeek Harness Desktop 0.2.0-rc.2** with the
 standard Agent preset and Goal service. Other clients, Web/headless profiles,
 Windows/Linux and other Host versions are not claimed compatible.
 
-In Desktop, open **Plugins → Add plugin** and install these sources in order:
+In Desktop, open **Plugins → Add plugin** and enter this pinned source:
 
-| Order | Component | Source |
-| --- | --- | --- |
-| 1 | [Original PUA](https://github.com/MichengAI/dsh-pua) | `@michengai/dsh-pua@0.3.27` |
-| 2 | [Original Completion Guard](https://github.com/GreenLv/dsh-completion-guard) | `dsh-completion-guard@0.9.0` |
-| 3 | Task Runner | `github:bbskye5008/dsh-task-runner#v0.3.6` |
+```text
+github:bbskye5008/dsh-task-runner#v0.3.7
+```
 
-Keep already installed matching versions. Restart Harness after installation.
-Task Runner does not automatically install its prerequisites or change model or
-account settings. Desktop owns the `desktop` profile; the CLI rejects direct
+Fully quit and restart Harness after installation. The single
+package includes fixed PUA 0.3.27, Guard 0.9.0 and SpecWorkflow 0.1.1 runtimes.
+Standalone PUA/Guard installs are optional; existing servers remain overridden.
+The qualified owner is the actual Task Runner installation plus its pinned
+component inventory. Host SDK byte and route audits still apply.
+Task Runner does not change model or account settings. Desktop owns the `desktop` profile; the CLI rejects direct
 `dsh plugin --profile desktop add ...` writes to that managed profile.
 
 The repository includes runnable JavaScript: no build/prepare step is required.
@@ -87,7 +87,18 @@ omits the optional `tarball` field and uses GitHub source installation.
 
 GitHub releases and market catalog updates are separate. Installed plugins do
 not update automatically. Use the pinned source above for this release; a market
-entry may still refer to a different cataloged version.
+entry may still refer to a different cataloged version. Older v0.3.6 installations
+follow their version-specific standalone prerequisites.
+
+Prepublication validation used a fresh Desktop profile, the actual Desktop SDK
+and official installer, then a separate cold-boot process: Task Runner was the
+only external dependency, qualification was supported and all three commands
+(`/task-run help`, `/pua status`, `/context-guard on`) worked. All 87 core tests
+passed; 172 payload files are bound by the inventory. Missing legacy server
+targets may produce two compatibility patch warnings, without requiring the
+standalone plugins. This did not rerun the model task or test a separate physical
+machine. Postpublication GitHub installation results are recorded in the
+[v0.3.7 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.7).
 
 The 2026-10-16 live Chinese inventory-audit test used the same Flash/High model,
 task and frozen verifiers as the previous 0.3.5 run, omitting `--workspace`.

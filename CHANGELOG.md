@@ -1,5 +1,14 @@
 # 更新记录
 
+## 0.3.7 — 2026-10-16
+
+- 单包安装：使用包内固定 PUA、Guard 与 SpecWorkflow，不再要求另外安装两个原插件。
+- 为内置 Guard 增加真实 Task Runner 安装主体：检查选中 bundle、profile/lock/importer、实际加载位置和组件清单；保留 Host SDK 字节和依赖路由审计。
+- 打包时检查 172 个运行及组件文件；组件缺失、变更、额外文件、链接、来源或版本不符时拒绝。
+- 87 项回归通过；独立空 Desktop profile 经官方插件管理器单包安装、独立进程冷启动，资格 supported，Task Runner/PUA 命令和 Guard 激活可用。
+- 旧插件可保留，继续接管其 server 行；冻结验收、候选证书、跨 turn 和 8 轮/90 分钟限制未改。
+- 中文安装说明改为单一固定来源 `github:bbskye5008/dsh-task-runner#v0.3.7`；Release 提供离线 tgz 和校验文件。安装测试未重复模型长任务，发布后 GitHub 冷启动验证结果记录于 Release。
+
 ## 0.3.6 — 2026-10-16
 
 - 组合任务未完成时，PUA 保存证据并结束当前物理 turn，由原生 Goal 驱动器发起同会话后续 turn。

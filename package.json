@@ -1,6 +1,6 @@
 {
   "name": "dsh-task-runner",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "PUA + Guard task launcher with candidate-bound acceptance, at most 8 rounds and 90 minutes",
   "type": "module",
   "license": "Apache-2.0",
@@ -33,6 +33,15 @@
     },
     "engines": {
       "dsh": "0.2.0-rc.2"
+    },
+    "taskRunner": {
+      "schema": "dsh-task-runner-bundle/v1",
+      "components": {
+        "guard": "0.9.0",
+        "pua": "0.3.27",
+        "specworkflow": "0.1.1"
+      },
+      "integrity": "9046ad648baad61c2d7ce1e5638c491ff65b6c7910c5405ec8765acb2fd11d39"
     }
   },
   "engines": {
@@ -59,7 +68,7 @@
   },
   "scripts": {
     "test": "node --test tests/*.test.mjs",
-    "build:vendor": "python3 scripts/build-vendor.py",
+    "build:vendor": "python3 scripts/build-vendor.py && node scripts/build-bundle-integrity.mjs",
     "prepack": "node scripts/check-pack.mjs"
   },
   "keywords": [

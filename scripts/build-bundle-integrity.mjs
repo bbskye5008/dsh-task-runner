@@ -1,0 +1,14 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {fileURLToPath} from 'node:url';
+import {join} from 'node:path';
+import {bundledPayloadFiles} from '../runtime/bundled-owner.mjs';
+const root=fileURLToPath(new URL('../',import.meta.url));
+const sha=x=>createHash('sha256').update(x).digest('hex');
+const files=Object.fromEntries(bundledPayloadFiles(root).map(p=>[p,sha(readFileSync(join(root,p)))]));
+const bytes=JSON.stringify({schema:'dsh-task-runner-payload/v1',files},null,2)+'\n';
+writeFileSync(join(root,'vendor/bundle-integrity.json'),bytes);
+const path=join(root,'package.json'),manifest=JSON.parse(readFileSync(path,'utf8'));
+manifest.dsh.taskRunner={schema:'dsh-task-runner-bundle/v1',components:{guard:'0.9.0',pua:'0.3.27',specworkflow:'0.1.1'},integrity:sha(bytes)};
+writeFileSync(path,JSON.stringify(manifest,null,2)+'\n');
+console.log('Bound '+Object.keys(files).length+' bundled runtime/component files.');

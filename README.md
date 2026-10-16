@@ -18,47 +18,43 @@ DeepSeek Harness 0.2.0-rc.2，PUA 0.3.27、Guard 0.9.0。其他宿主版本未�
 
 ## 安装
 
-当前版本为 **0.3.6**：任务未完成时结束当前物理 turn，由宿主 Goal 自动开启下一 turn；
-如果 Goal 已完成但尚未取得最终证书，则以独立下一 turn 补签，不重开任务或重置预算。
-安装固定标签 `v0.3.6` 后重启 Harness。本次真实跨 turn 复测结果见下方及 [验证记录](VALIDATION.md#036-跨物理-turn-失败恢复)。
+**从 0.3.7 起只需安装 Task Runner 一个插件**：已内置固定 PUA 0.3.27、Guard 0.9.0 和 SpecWorkflow 0.1.1。
+无需先安装原 PUA、Guard。安装本包后完全退出并重启 Harness 即可。
 
 包内提交了可运行 JavaScript，无须安装时执行 build/prepare 脚本。
 在 Harness 的“安装第三方插件”里选择本包的本地目录、本地 `.tgz` 文件或 GitHub 地址。
 本机没有 dsh CLI 时也可使用这个入口。先停止正在运行的任务，安装后重启 Harness。
 
-当前验证范围为 **macOS / DeepSeek Harness Desktop 0.2.0-rc.2**；宿主须提供标准 Agent 预设、Goal 服务和两个原组件的安装记录。
+当前验证范围为 **macOS / DeepSeek Harness Desktop 0.2.0-rc.2**；宿主须提供标准 Agent 预设、Goal 服务和 Task Runner 自身的真实安装记录。
 其他客户端、Web/headless profile、Windows/Linux 和其他宿主版本尚未验证，不能据此宣称兼容。
 
-在 Desktop 的「插件 → 添加插件」中，按顺序填入下表的安装来源。已有对应版本则保留，不必重复安装。
+新机器在 Desktop 的「插件 → 添加插件」中，只填写这一个固定版本来源：
 
-| 顺序 | 插件 | 安装来源 |
-| --- | --- | --- |
-| 1 | [PUA（原作者）](https://github.com/MichengAI/dsh-pua) | `@michengai/dsh-pua@0.3.27` |
-| 2 | [Completion Guard（原作者）](https://github.com/GreenLv/dsh-completion-guard) | `dsh-completion-guard@0.9.0` |
-| 3 | Task Runner | `github:bbskye5008/dsh-task-runner#v0.3.6` |
+```text
+github:bbskye5008/dsh-task-runner#v0.3.7
+```
+
+安装后完全退出并重启 Harness。本版不用三次安装，也不会在启动时调用安装器补装组件。
+离线安装时，从 [v0.3.7 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.7)
+下载 `.tgz` 和 `SHA256SUMS`，核对摘要后在同一安装入口选择 `.tgz` 的本地绝对路径。
+安装后重启 Harness，打开项目工作区、选择模型，即可输入 `/task-run --task "我想做的事情"`。
 
 0.3.4 已内置 SpecWorkflow 的 `to-grill`（需求澄清）和 `to-spec`（规格整理），无需单独安装 SpecWorkflow。
 这两个阶段只准备需求、规格和验收；确认后继续由现有 PUA + Guard 执行。
 原始技能文件、MIT 许可和来源摘要保存在 `vendor/specworkflow/`；当前 SDK 的适配方式见 [验证记录](VALIDATION.md)。
 
-复制 Task Runner 安装来源，在 Desktop 的「插件 → 添加插件」输入框粘贴并安装：
-
-```text
-github:bbskye5008/dsh-task-runner#v0.3.6
-```
-
-已有 Task Runner 时，先取消活动任务，再通过同一入口安装这个版本并重启；启动后在插件详情核对版本为 0.3.6。
-Task Runner 不会自行联网安装这两个前置插件，也不会修改账户或模型配置。
+已有 Task Runner 时，先取消活动任务，再通过同一入口安装上述固定版本并重启；核对版本为 0.3.7。
+原 PUA、Guard 已经单独安装时可以保留；组合层继续接管原 server 行，避免重复运行，不删除原插件文件。
+Task Runner 不会修改账户或模型配置。
 Desktop profile 由 Electron 应用管理；不要执行 `dsh plugin --profile desktop add ...`，CLI 会拒绝修改这个受管 profile。
 
 GitHub 发布与市场目录更新相互独立，已安装插件也不会自动升级。
-市场入口应以目录登记的版本为准；本版可直接使用上述固定标签安装来源。
-离线安装可下载 [v0.3.6 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.6) 的 `.tgz`，
-再在安装输入框填写下载文件的本地绝对路径。远程 Release 资产 URL 的直接安装方式尚未验证。
+市场入口应以目录登记的版本为准；要安装本版，请使用上面的 `#v0.3.7` 固定来源。
+旧公开版本的三插件安装步骤见 [v0.3.6 安装说明](https://github.com/bbskye5008/dsh-task-runner/blob/v0.3.6/README.md)。
 
-原 Guard 的 Desktop 宿主资格链需要 profile 保留它的正式安装记录；本包不绕过该检查。
-原组件文件保持不变；组合层暂停两个原 server 行，加载包内固定版本的 server。
-原 PUA 的客户端配置入口可继续使用。卸载组合包并重启后恢复原 server 行。
+资格链检查 Task Runner 自身的 profile 声明、lock/importer、安装索引、实际加载位置及包内组件字节。
+Host SDK 来源、版本、字节及依赖路由审计继续执行；组件缺失或被改动时拒绝启动任务。
+已有原 PUA 时，其客户端配置入口可继续使用。卸载组合包并重启后，保留的原 server 行恢复。
 插件管理器可能要求确认插件来源；安装第三方代码属于用户自己的信任决定。
 
 ## 一个启动命令
@@ -185,6 +181,17 @@ status.json 保存状态、原截止和最终证书摘要；events.jsonl 保存�
 profile.json / user-message.txt 是冻结契约；checks/ 保存副本和实际进程结果。
 控制器仅监听当前用户权限的 Unix socket，不开公网端口，不上传任务内容。
 
+## 0.3.7 单插件安装验证
+
+用客户端实际 SDK 和官方插件管理器，在独立空 Desktop profile 只安装 Task Runner，
+再用独立进程冷启动：仅登记 Task Runner 一个外部依赖，没有独立 PUA、Guard；
+宿主资格 `supported`，`/task-run`、PUA 命令及 Guard 激活均通过。87 项回归通过。
+清单校验覆盖 172 个运行及组件文件。本次没有重跑 0.3.6 的模型长任务。
+空 profile 可能出现两条兼容补丁目标不存在的提示，不要求补装原插件。
+此处记录发布前的本地包验证；发布后的干净 GitHub 安装结果见
+[v0.3.7 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.7)。
+详情见 [验证记录](VALIDATION.md#037-单插件安装验证)。
+
 ## 0.3.6 跨物理 turn 实测
 
 2026-10-16，在 macOS / Harness Desktop 0.2.0-rc.2、`deepseek-account / deepseek-flash / high`
@@ -253,7 +260,7 @@ profile.json / user-message.txt 是冻结契约；checks/ 保存副本和实际�
 ## 上游与本插件的关系
 
 感谢 [MichengAI/dsh-pua](https://github.com/MichengAI/dsh-pua) 和 [GreenLv/dsh-completion-guard](https://github.com/GreenLv/dsh-completion-guard)。
-正式前置安装来源均为原作者的 npm 包。本包还携带归属明确的 Apache-2.0 修改版服务器组件，以接入同候选验收和证书门禁；
+PUA、Guard 组件来源为原作者的 npm 包。本包携带归属明确的 Apache-2.0 修改版服务器组件，以接入同候选验收和证书门禁；
 原始许可证、NOTICE、固定版本与文件哈希见 `vendor/`。这些修改不是上游官方版本，上游作者未背书。
 本插件自身新增的协调逻辑位于 `index.mjs`、`runtime/` 和 `guard.mjs`，组合差异可由 `scripts/build-vendor.py` 复现。
 

@@ -1,3 +1,4 @@
+import { taskRunnerGuardOwner } from "../../runtime/bundled-owner.mjs";
 import { installedReferenceMatches } from "../../runtime/installation-identity.mjs";
 import { createRequire } from "node:module";
 import * as nodeFs from "node:fs";
@@ -12146,7 +12147,9 @@ function resolveDesktopProfileHostLock(appAsarPath, profileRoot, expectedPluginV
 }
 /** An active Desktop lock requires a real installed Guard importer. The
 * dependency-free application-owned profile has its own preinstall path. */
-function verifyDesktopPluginIdentity(profileRoot, expectedPluginVersion) {
+function verifyDesktopPluginIdentity(profileRoot, expectedPluginVersion = "0.9.0") {
+    const compositeOwner = taskRunnerGuardOwner(profileRoot, expectedPluginVersion);
+    if (compositeOwner) return compositeOwner;
 	if (!existsSync$1(join(profileRoot, "node_modules", ".package-map.json")) && !existsSync$1(join(profileRoot, "node_modules", ".modules.yaml"))) throw new HostProfileError("profile_plugin_unbound", "the desktop profile has no installed plugin importer");
 	const profile = readJsonObject(join(profileRoot, "package.json"), "profile_manifest_invalid");
 	const dsh = profile.dsh && typeof profile.dsh === "object" ? profile.dsh : {};
@@ -12158,6 +12161,7 @@ function verifyDesktopPluginIdentity(profileRoot, expectedPluginVersion) {
 	if (!existsSync$1(pluginManifestPath)) throw new HostProfileError("profile_plugin_unbound", "the desktop profile importer does not carry the dsh-completion-guard plugin");
 	const installedPlugin = readJsonObject(pluginManifestPath, "installed_plugin_invalid");
 	if (installedPlugin.name !== "dsh-completion-guard" || installedPlugin.version !== expectedPluginVersion) throw new HostProfileError("profile_plugin_version_mismatch", "installed profile plugin identity does not match the generator version");
+    return pluginManifestPath;
 }
 /** One desktop evaluation: graph readback (app rows + profile importer rows),
 * qualification, and the installed-byte audit. Shared by inject and every
@@ -12167,9 +12171,7 @@ function reevaluateDesktopCoreLock(appAsarPath, profileRoot, trust) {
 	const session = createHostAuditSession();
 	const runtime = readDesktopAppRuntime(appAsarPath, session);
 	const executable = verifyDesktopCarrier(runtime.asarRealpath, runtime.headerSha256);
-	const pluginManifestPath = join(profile, "node_modules", "dsh-completion-guard", "package.json");
-	const installedPlugin = session.readJson(pluginManifestPath);
-	verifyDesktopPluginIdentity(profile, String(installedPlugin.version));
+	const pluginManifestPath = verifyDesktopPluginIdentity(profile);
 	const profileRows = desktopProfileRows(profile, session);
 	const runtimeRows = asarRowsWithIntegrity(runtime, trust ? [...trust.packages, ...trust.probeDependencies ?? []] : cohortIntegrityRows(runtime));
 	const runtimeKeys = new Set(runtimeRows.map((row$3) => `${row$3.name}\u0000${row$3.version ?? ""}\u0000${row$3.integrity ?? ""}`));
