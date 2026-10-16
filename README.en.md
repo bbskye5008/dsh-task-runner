@@ -72,7 +72,8 @@ github:bbskye5008/dsh-task-runner#v0.3.7
 ```
 
 Click **Enable now** (or turn on Task Runner in the plugin list), then fully quit
-and restart Harness. Configure a usable account/API model before starting a task.
+and restart Harness. Configure a usable account/API model before starting a task. After first setup or
+a model change, send an ordinary message to confirm it works, then invoke Task Runner.
 The single
 package includes fixed PUA 0.3.27, Guard 0.9.0 and SpecWorkflow 0.1.1 runtimes.
 Standalone PUA/Guard installs are optional; existing servers remain overridden.
@@ -102,9 +103,11 @@ standalone plugins. This did not rerun the model task or test a separate physica
 machine. A second test used the full Desktop UI with a fresh plugin profile and Task Runner
 state, retaining existing account login: GitHub installation, enablement and full
 Electron restart passed; all three commands worked in the new Host process. A
-workspace-defaulted preparation session was created. Two extra model attempts
-stopped with MISSING_CREDENTIAL on the default API route and were cancelled, so
-model task success is not claimed. The original profile was restored.
+workspace-defaulted preparation session inherited the working account model,
+read the exact marker and asked the JSON/CSV clarification question, then was
+explicitly cancelled. Two earlier default API-route MISSING_CREDENTIAL failures
+are retained in the record. This entry smoke does not claim a complete
+specification/approval/execution or long-task test. The original profile was restored.
 Postpublication GitHub installation results are recorded in the
 [v0.3.7 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.7).
 

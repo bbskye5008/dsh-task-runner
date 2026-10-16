@@ -38,7 +38,7 @@ github:bbskye5008/dsh-task-runner#v0.3.7
 离线安装时，从 [v0.3.7 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.7)
 下载 `.tgz` 和 `SHA256SUMS`，核对摘要后在同一安装入口选择 `.tgz` 的本地绝对路径。
 先在 Harness 配置可用模型：账号用户选择「DeepSeek 账号」下的模型，API 用户需配置对应 API Key。
-打开项目工作区，在已确认模型可用的普通会话中输入 `/task-run --task "我想做的事情"`。
+首次使用或切换模型后，先在普通会话发一条消息确认模型可用，再输入 `/task-run --task "我想做的事情"`。
 
 0.3.4 已内置 SpecWorkflow 的 `to-grill`（需求澄清）和 `to-spec`（规格整理），无需单独安装 SpecWorkflow。
 这两个阶段只准备需求、规格和验收；确认后继续由现有 PUA + Guard 执行。
@@ -191,8 +191,10 @@ profile.json / user-message.txt 是冻结契约；checks/ 保存副本和实际�
 另以全新插件 profile 和 Task Runner 状态，经完整桌面 UI 从 GitHub 安装、点击启用、
 完全退出并重开 Harness；旧宿主进程已退出，新进程中 `/task-run help`、`/pua status`、
 `/context-guard on` 均成功。该 UI 测试保留已有账号登录，结束后恢复原 profile。
-不传 `--workspace` 可创建位于当前工作区的需求准备会话；额外的两次模型尝试因默认 API 路由
-没有凭据而停止，已取消，不计为模型冒烟通过。本次未重跑长任务。
+从已确认可用的账号模型普通会话，不传 `--workspace` 启动准备入口：
+新会话继承 `deepseek-account / deepseek-flash`，读取并复述精确工作区标记、提出 JSON/CSV 问题，
+随后显式取消。此前两次默认 API 路由缺凭据的失败保留在记录中。
+该轻量冒烟只覆盖入口、读取与提问；未走完规格、确认、执行，也未重跑长任务。
 空 profile 的两条旧 server 目标不存在提示不要求补装原插件。
 
 详情见 [验证记录](VALIDATION.md#037-单插件安装验证)、

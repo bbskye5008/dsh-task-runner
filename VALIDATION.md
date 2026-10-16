@@ -39,7 +39,11 @@ Agent 工厂参数的问题已修正；最终冷启动结论来自修正后的�
    UI 安装的 182 个文件仍与 Release tgz 一致；没有独立 PUA、Guard。
 4. 不传 `--workspace` 创建准备会话，工作区符合来源会话。
    额外两次模型尝试均因新 profile 的默认 `deepseek-official` 路由缺少 API Key 而 `MISSING_CREDENTIAL`，
-   已显式取消；没有据此宣称模型冒烟、需求澄清内容或长任务通过。
+   已显式取消，未将这两次失败记为模型通过。
+   随后在普通会话确认「DeepSeek 账号」Flash 模型成功回复「就绪」，再从该会话调用同一命令：
+   新准备会话继承 `deepseek-account / deepseek-flash`，读取精确标记
+   `DSH037_SINGLE_PLUGIN_NATIVE_RESTART`，询问 JSON/CSV 并等待，随后显式取消。
+   这次入口冒烟通过；`loadedSkills` 为空，未把它记为已调用 `to-grill` 或完成全套规格、批准与执行。
 5. 结束后恢复原 profile 和 Task Runner 状态，原 profile manifest 摘要未变。
 
 完整桌面测试未复制旧插件记录；已有账号登录保留，不能描述成另一台无账号机器实测。
