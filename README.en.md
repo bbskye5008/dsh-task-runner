@@ -13,7 +13,9 @@ This is an independent integration, not an official DeepSeek product.
 
 ## Requirements preparation
 
-Install the 0.3.5 composite package in Desktop and restart Harness. It includes
+Install the composite package in Desktop and restart Harness. Version 0.3.6
+uses real physical-turn handoffs and is available through the pinned GitHub
+source below. It includes
 unchanged SpecWorkflow 0.1.1 `to-grill` / `to-spec` skills and references with
 their MIT license and byte provenance. Its registration adapter targets the
 installed DSH 0.2.0-rc.2 bundled-provider SDK, including a real-SDK load check.
@@ -70,7 +72,7 @@ In Desktop, open **Plugins → Add plugin** and install these sources in order:
 | --- | --- | --- |
 | 1 | [Original PUA](https://github.com/MichengAI/dsh-pua) | `@michengai/dsh-pua@0.3.27` |
 | 2 | [Original Completion Guard](https://github.com/GreenLv/dsh-completion-guard) | `dsh-completion-guard@0.9.0` |
-| 3 | Task Runner | `github:bbskye5008/dsh-task-runner#v0.3.5` |
+| 3 | Task Runner | `github:bbskye5008/dsh-task-runner#v0.3.6` |
 
 Keep already installed matching versions. Restart Harness after installation.
 Task Runner does not automatically install its prerequisites or change model or
@@ -86,6 +88,16 @@ omits the optional `tarball` field and uses GitHub source installation.
 GitHub releases and market catalog updates are separate. Installed plugins do
 not update automatically. Use the pinned source above for this release; a market
 entry may still refer to a different cataloged version.
+
+The 2026-10-16 live Chinese inventory-audit test used the same Flash/High model,
+task and frozen verifiers as the previous 0.3.5 run, omitting `--workspace`.
+Failure blocked certification and early Goal completion. The native Goal driver
+started physical turn 2 for repairs; a plugin next-turn message started turn 3
+to recertify Goal revision 2. The same candidate then finished automatically,
+without a human reply: 52/52 frozen checks, 58/58 independent checks and 36
+project self-tests. It used 495.411 seconds and 5/8 conservatively counted rounds
+(3 PUA iterations plus 2 extra physical turns). Core regression: 73/73.
+See [validation](VALIDATION.md#036-跨物理-turn-失败恢复) and [public result](validation/0.3.6.json).
 
 ## Run a task
 

@@ -1,0 +1,127 @@
+{
+  "schema": "dsh-task-runner-validation/v1",
+  "version": "0.3.6",
+  "date": "2026-10-16",
+  "environment": {
+    "os": "macOS",
+    "host": "DeepSeek Harness Desktop 0.2.0-rc.2",
+    "pua": "0.3.27",
+    "guard": "0.9.0",
+    "provider": "deepseek-account",
+    "model": "deepseek-flash",
+    "reasoningEffort": "high"
+  },
+  "scenario": "Chinese offline inventory JSONL audit CLI; first physical turn read-only; repair requires native Goal round >= 1",
+  "comparisonConditions": {
+    "sameModel": true,
+    "sameTask": true,
+    "samePrototype": true,
+    "sameFrozenVerifiers": true,
+    "workspaceOmitted": true
+  },
+  "limits": {
+    "maxRounds": 8,
+    "maxMinutes": 90,
+    "deadlineReset": false
+  },
+  "result": {
+    "status": "complete",
+    "executionSeconds": 495.411,
+    "physicalTurns": 3,
+    "puaIterations": 3,
+    "hostConservativeRounds": 5,
+    "nativeGoalMessages": 1,
+    "certificateFollowupTurns": 1,
+    "operatorRepliesAfterStart": 0,
+    "publicAcceptance": {
+      "exitCode": 0,
+      "elapsedSeconds": 4.369,
+      "passed": 52,
+      "total": 52,
+      "failed": []
+    },
+    "independentAcceptance": {
+      "exitCode": 0,
+      "elapsedSeconds": 4.711,
+      "passed": 58,
+      "total": 58,
+      "failed": []
+    },
+    "projectSelfTests": 36,
+    "workflowChecks": {
+      "passed": 10,
+      "total": 10
+    },
+    "constraintChecks": {
+      "passed": 18,
+      "total": 18
+    }
+  },
+  "workflowChecks": {
+    "truePhysicalBoundaryAfterFailure": true,
+    "nativeAutomaticGoalMessage": true,
+    "noHumanReply": true,
+    "actualGoalRoundReadBeforeRepair": true,
+    "repairOnlyAfterPhysicalBoundary": true,
+    "nativeGoalHandoff": true,
+    "repairedCandidate": true,
+    "frozenAcceptancePass": true,
+    "goalRevisionRecertification": true,
+    "automaticCertifiedCompletion": true
+  },
+  "baseline": {
+    "publicAcceptance": {
+      "passed": 8,
+      "total": 52
+    },
+    "independentAcceptance": {
+      "passed": 6,
+      "total": 58
+    },
+    "candidateSha256": "06875d7af6f5d2dc03cfed1870821731fb348009858f6326895bb2b30886675b"
+  },
+  "comparison035": {
+    "status": "round_limit",
+    "executionSeconds": 476.161,
+    "physicalTurns": 1,
+    "puaIterations": 8,
+    "hostConservativeRounds": 8,
+    "publicAcceptance": {
+      "passed": 8,
+      "total": 52
+    },
+    "independentAcceptance": {
+      "passed": 6,
+      "total": 58
+    }
+  },
+  "finalCandidateSha256": "42e9f61c37e9ef57b995219cf6d678d3a4616d12f62604e2bc7f0f99cab9cd50",
+  "certificateBindings": [
+    {
+      "goalRevision": 1,
+      "candidateSha256": "42e9f61c37e9ef57b995219cf6d678d3a4616d12f62604e2bc7f0f99cab9cd50",
+      "certificateDigest": "22aa23c83c1a824d7d2f8e42301088accb9b0304c7b4a639a0be2f0184e790ac"
+    },
+    {
+      "goalRevision": 2,
+      "candidateSha256": "42e9f61c37e9ef57b995219cf6d678d3a4616d12f62604e2bc7f0f99cab9cd50",
+      "certificateDigest": "0cb9a990e6a8ea9622fe266ff64471014136c99ce4cd310a72de1461fe662ff2"
+    }
+  ],
+  "frozenSha256": {
+    "public_gate": "4fecc26c9ec94ac71bfef1421219bb056379d30310d8699799b780638664ef39",
+    "business_contract": "4598f382562c29ceba064d0164ef1834319998ca3e327c260bcd5d363451bd58",
+    "independent": "643f69a20166673effb5cfea2a89ca93f4a52ffb2e7c6afdea9ed660d1f0f213",
+    "scenario": "86d532e48ec248d1ae13b512be8a5316ccafe95171b40b323c609dbd53bad768"
+  },
+  "coreRegression": {
+    "passed": 73,
+    "total": 73
+  },
+  "limitations": [
+    "One live scenario on the pinned macOS host, not a 90-minute endurance result.",
+    "Requirements-preparation end-to-end flow was not repeated in this run.",
+    "HMAC was validated by the live host; public digests are not an offline signature.",
+    "Raw sessions, private host keys and local paths are not published."
+  ]
+}

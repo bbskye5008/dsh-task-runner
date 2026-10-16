@@ -1,4 +1,5 @@
 import { runPuaAcceptance } from "../../../runtime/acceptance.mjs";
+import { handoffTaskLoop, isFinalCompletionPromise } from "../../../runtime/turn-handoff.mjs";
 import { gate as unifiedGate } from "../../../runtime/completion-gate.mjs";
 import { createHash } from "node:crypto";
 import { createUserMessage } from "@deepseek-ai/dsh-llm";
@@ -527,7 +528,7 @@ export class PuaRuntime {
             return;
         }
         let note = "";
-        if (/<promise>\s*LOOP_DONE\s*<\/promise>/u.test(output)) {
+        if (unifiedGate.required(session) ? isFinalCompletionPromise(output) : /<promise>\s*LOOP_DONE\s*<\/promise>/u.test(output)) {
             if (unifiedGate.required(session) && !loop.verify) { finish("paused", "Unified Completion: frozen Oracle required"); return; }
             if (!loop.verify) {
                 finish("complete", "完成信号已接受：未配置 Oracle，仅 honor system，不是独立验证通过。");
@@ -586,7 +587,8 @@ export class PuaRuntime {
                             ? "停下来重新审视根因，用完全不同的思路。"
                             : "退回去从需求本身重新质疑。";
         signal.throwIfAborted();
-        agent.steer(pluginMessage(`▎ 第 ${loop.iteration} 轮。${pressure}\n${note}\n任务：${loop.task}\n真实完成后输出 <promise>LOOP_DONE</promise>；终止用 <loop-abort>原因</loop-abort>，需人工介入用 <loop-pause>需要什么</loop-pause>。`));
+        const continuation = pluginMessage(`▎ 第 ${loop.iteration} 轮。${pressure}\n${note}\n任务：${loop.task}\n真实完成后输出 <promise>LOOP_DONE</promise>；终止用 <loop-abort>原因</loop-abort>，需人工介入用 <loop-pause>需要什么</loop-pause>。`);
+        if (!handoffTaskLoop(agent, continuation, loop.iteration)) agent.steer(continuation);
     }
 }
 //# sourceMappingURL=runtime.js.map

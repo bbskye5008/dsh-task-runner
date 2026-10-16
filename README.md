@@ -18,6 +18,10 @@ DeepSeek Harness 0.2.0-rc.2，PUA 0.3.27、Guard 0.9.0。其他宿主版本未�
 
 ## 安装
 
+当前版本为 **0.3.6**：任务未完成时结束当前物理 turn，由宿主 Goal 自动开启下一 turn；
+如果 Goal 已完成但尚未取得最终证书，则以独立下一 turn 补签，不重开任务或重置预算。
+安装固定标签 `v0.3.6` 后重启 Harness。本次真实跨 turn 复测结果见下方及 [验证记录](VALIDATION.md#036-跨物理-turn-失败恢复)。
+
 包内提交了可运行 JavaScript，无须安装时执行 build/prepare 脚本。
 在 Harness 的“安装第三方插件”里选择本包的本地目录、本地 `.tgz` 文件或 GitHub 地址。
 本机没有 dsh CLI 时也可使用这个入口。先停止正在运行的任务，安装后重启 Harness。
@@ -31,7 +35,7 @@ DeepSeek Harness 0.2.0-rc.2，PUA 0.3.27、Guard 0.9.0。其他宿主版本未�
 | --- | --- | --- |
 | 1 | [PUA（原作者）](https://github.com/MichengAI/dsh-pua) | `@michengai/dsh-pua@0.3.27` |
 | 2 | [Completion Guard（原作者）](https://github.com/GreenLv/dsh-completion-guard) | `dsh-completion-guard@0.9.0` |
-| 3 | Task Runner | `github:bbskye5008/dsh-task-runner#v0.3.5` |
+| 3 | Task Runner | `github:bbskye5008/dsh-task-runner#v0.3.6` |
 
 0.3.4 已内置 SpecWorkflow 的 `to-grill`（需求澄清）和 `to-spec`（规格整理），无需单独安装 SpecWorkflow。
 这两个阶段只准备需求、规格和验收；确认后继续由现有 PUA + Guard 执行。
@@ -40,16 +44,16 @@ DeepSeek Harness 0.2.0-rc.2，PUA 0.3.27、Guard 0.9.0。其他宿主版本未�
 复制 Task Runner 安装来源，在 Desktop 的「插件 → 添加插件」输入框粘贴并安装：
 
 ```text
-github:bbskye5008/dsh-task-runner#v0.3.5
+github:bbskye5008/dsh-task-runner#v0.3.6
 ```
 
-已有 Task Runner 时，先取消活动任务，再通过同一入口安装这个版本并重启；启动后在插件详情核对版本为 0.3.5。
+已有 Task Runner 时，先取消活动任务，再通过同一入口安装这个版本并重启；启动后在插件详情核对版本为 0.3.6。
 Task Runner 不会自行联网安装这两个前置插件，也不会修改账户或模型配置。
 Desktop profile 由 Electron 应用管理；不要执行 `dsh plugin --profile desktop add ...`，CLI 会拒绝修改这个受管 profile。
 
 GitHub 发布与市场目录更新相互独立，已安装插件也不会自动升级。
 市场入口应以目录登记的版本为准；本版可直接使用上述固定标签安装来源。
-离线安装可下载 [v0.3.5 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.5) 的 `.tgz`，
+离线安装可下载 [v0.3.6 Release](https://github.com/bbskye5008/dsh-task-runner/releases/tag/v0.3.6) 的 `.tgz`，
 再在安装输入框填写下载文件的本地绝对路径。远程 Release 资产 URL 的直接安装方式尚未验证。
 
 原 Guard 的 Desktop 宿主资格链需要 profile 保留它的正式安装记录；本包不绕过该检查。
@@ -59,7 +63,7 @@ GitHub 发布与市场目录更新相互独立，已安装插件也不会自动�
 
 ## 一个启动命令
 
-安装 **0.3.5** 并重启 Harness 后，在已选择所需模型、已绑定工作区的普通会话中输入：
+安装当前版本并重启 Harness 后，在已选择所需模型、已绑定工作区的普通会话中输入：
 
 ```text
 /task-run --task "我想做的事情"
@@ -152,6 +156,14 @@ Harness 对应命令是 /task-run status 和 /task-run cancel task-UUID。
    交付 TASK_GATE_FINAL.md 和 TASK_GATE_PROGRESS.md，宿主检查后签证。
 5. Goal 完成导致 revision 变化，旧证书失效；再验收签证后，PUA 才能接受 LOOP_DONE。
 
+0.3.6 的未完成续跑会交给原生 Goal 驱动器。PUA 保存失败证据后不再向当前 turn 注入
+`steer` 消息，让真实 `turn/end` 和空闲事件触发原生后续轮次。同一运行的任务、阶段、冻结
+验收和原截止时间继续有效；暂停、取消、到限或宿主重启均不会因此自动恢复。
+只有最后一行独立的 `<promise>LOOP_DONE</promise>` 才是本组合的完成请求，报告中引用
+或否定该标签不会触发完成验收。完成放行仍要求同候选验收与当前 Goal 证书同时有效。
+正式执行中的上述交接无需回复“继续”，也不需要手动重新运行命令。需求准备阶段的问题和
+具体版本确认仍需用户回答；执行器不会代替用户批准需求或重启一个已取消、到限的任务。
+
 验收命令在工作区的独立副本中运行，结果目录位于 ~/.dsh/task-runner/task-UUID/。
 副本忽略 .git、node_modules、.scratch 和语言缓存；node_modules 复用现有依赖目录。
 命令退出 0 才算通过，打印“pass”不算证据。模型不能用另一个命令替换验收。
@@ -163,6 +175,7 @@ Harness 对应命令是 /task-run status 和 /task-run cancel task-UUID。
 
 - 正式执行截止从批准后创建执行运行时开始记录；使用 `--verify` 时从直接启动执行开始记录。模型重试、验收和 Goal 重签不重置截止。
 - 轮数按 PUA iteration 加额外物理 turn 保守计算；它与模型单次工具调用数不同。
+- 跨 turn 前会先检查下一 turn 的保守计数，拒绝超预算的交接；交接不重新给 8 轮或 90 分钟。
 - 到时取消当前模型活动、验收进程组、PUA 自动续轮，并解除 Goal 自动继续资格。
 - 超时、到轮次、取消、需要输入、崩溃中断均不会记录成完成。
 - 重启后旧运行标记 interrupted，不恢复上一进程的 HMAC 证书，也不自动再给 90 分钟。
@@ -171,6 +184,27 @@ Harness 对应命令是 /task-run status 和 /task-run cancel task-UUID。
 status.json 保存状态、原截止和最终证书摘要；events.jsonl 保存真实验收与门禁决定；
 profile.json / user-message.txt 是冻结契约；checks/ 保存副本和实际进程结果。
 控制器仅监听当前用户权限的 Unix socket，不开公网端口，不上传任务内容。
+
+## 0.3.6 跨物理 turn 实测
+
+2026-10-16，在 macOS / Harness Desktop 0.2.0-rc.2、`deepseek-account / deepseek-flash / high`
+复用原中文库存审计 CLI 任务、相同缺陷原型及冻结验收器，启动命令不指定 `--workspace`。
+首个 turn 只允许读取和验证，必须等宿主真实 Goal 续跑、`roundsStarted >= 1` 后才能修改实现。
+
+| 检查 | 本次结果 |
+| --- | --- |
+| 失败拦截 | 原型 8/52；checkpoint 不签证，提前完成 Goal 被拒绝 |
+| 跨 turn 自动修复 | 首轮正常结束，原生 Goal 自动开启第二 turn；读取真实轮数后才首次写入 |
+| Goal 版本变化 | revision 1 → 2 后旧证书失效，插件自动开启第三 turn 补签 |
+| 最终验收与完成 | 同候选重新签证，冻结验收 52/52，宿主自动 `complete` |
+| 结束后独立验收 | 归档候选 58/58；项目自测 36 项通过 |
+| 人工介入与预算 | 启动后无人工回复；3 个物理 turn、3 次 PUA 迭代，保守计数 5/8，用时 495.411 秒 |
+| 核心回归 | 73/73；冻结验收器与原要求未变 |
+
+相同场景的 0.3.5 在 1 个物理 turn 内用尽 8 次 PUA 迭代，状态为 `round_limit`，
+最终冻结验收 8/52、独立验收 6/58。此次验证了此前缺失的跨 turn 交接和补签自动续跑。
+这是一轮指定场景实测，不代表已跑满 90 分钟或验证所有长任务稳定性。
+完整流程、对比和公开摘要见 [验证记录](VALIDATION.md#036-跨物理-turn-失败恢复) 与 [结果 JSON](validation/0.3.6.json)。
 
 ## 0.3.5 工作区默认值
 

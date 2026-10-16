@@ -49,7 +49,7 @@ export function apply(ctx) {
       const base=native?.base();if(!base||!base.enabled||base.integrity!=='valid'||base.hostStatus!=='supported')throw Error('guard_activation_unavailable:'+JSON.stringify(native?.runtime.projection.integrityViolations));
       await invoke('/pua config '+JSON.stringify({subagents:false,integrityGuard:true,offline:true,maxIterations:input.rounds,verificationTimeout:120}));
       ctx.goals.create(run.agent,{objective:run.p.goal.objective,maxGoalRounds:input.rounds});
-      const goal=ctx.goals.get(run.agent);run.log('started',{goal,options:run.agent.options,originSession:origin?.id??null});
+      const goal=ctx.goals.get(run.agent);run.goalId=goal.id;run.readGoal=()=>ctx.goals.get(run.agent);run.log('started',{goal,options:run.agent.options,originSession:origin?.id??null});
       await invoke('/pua loop-json '+JSON.stringify({task:'执行已登记长任务 '+run.id+'，先调用 context_guard_prepare 读取完整任务和协议。',maxIterations:input.rounds,verificationTimeout:120,verify:run.p.acceptance.command}));
       run.save();return {...snapshot(run),evidence:run.dir};
     }catch(e){stop(run,'startup_error');run.log('startup_error',{error:String(e)});throw e;}

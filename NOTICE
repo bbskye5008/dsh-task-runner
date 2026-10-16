@@ -14,5 +14,8 @@ frozen task profiles, independent snapshot acceptance, completion/candidate/Goal
 certificate binding, command/CLI launch, and bounded task lifetime. Version 0.2.1 adds locked GitHub installation
 identity validation for non-critical direct plugins without changing Host SDK
 registry integrity, byte or route qualification.
+Version 0.3.6 delegates active-task physical-turn continuation to the native
+Goal driver, retains bounded certificate followups, and requires a final
+standalone completion promise for composite tasks.
 The original component authors do not endorse these modifications.
 Base file hashes are recorded in vendor/base-provenance.json.
